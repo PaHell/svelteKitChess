@@ -1,0 +1,39 @@
+.hidden
+	display none
+
+.flex-spacing
+	display    flex
+	align-items center
+
+	> *
+		&:not(:last-child)
+			margin-right $Spacing
+
+
+	> .icon:first-child
+		flex-shrink 0
+		width       $SizeBlock
+		margin      0
+		line-height $SizeBlock
+	
+	> .flex-col
+		width 0
+
+	&.top
+		align-items flex-start
+	
+.flex-1
+	flex  1
+	width auto
+
+.flex-col
+	display         flex
+	flex-direction  column
+	justify-content flex-start
+	width           100%
+
+	> *:not(:last-child)
+		margin-bottom $Spacing
+
+	&.center
+		align-items center

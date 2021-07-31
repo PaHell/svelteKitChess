@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+
+		
+
+		<link rel="modulepreload" href="/./_app/start-3a0586eb.js">
+		<link rel="modulepreload" href="/./_app/chunks/vendor-af93fd4f.js">
+		<link rel="modulepreload" href="/./_app/chunks/preload-helper-13c00eaa.js">
+		<link rel="modulepreload" href="/./_app/chunks/singletons-bb9012b7.js">
+		<link rel="modulepreload" href="/./_app/pages/__layout.svelte-1bbcaadc.js">
+		<link rel="modulepreload" href="/./_app/chunks/i18n-c59ff19e.js">
+		<link rel="modulepreload" href="/./_app/chunks/store-9d2904a2.js">
+		<link rel="modulepreload" href="/./_app/pages/index.svelte-c76bd0d9.js">
+		<link rel="modulepreload" href="/./_app/chunks/grid-c0402a68.js">
+		<link rel="stylesheet" href="/./_app/assets/start-9aa571ba.css">
+		<link rel="stylesheet" href="/./_app/assets/pages/__layout.svelte-e9e46622.css">
+		<link rel="stylesheet" href="/./_app/assets/grid-3297db53.css">
+
+		<script type="module">
+			import { start } from "/./_app/start-3a0586eb.js";
+			start({
+				target: document.querySelector("#svelte"),
+				paths: {"base":"","assets":"/."},
+				session: {},
+				host: location.host,
+				route: true,
+				spa: false,
+				trailing_slash: "never",
+				hydrate: {
+					status: 200,
+					error: null,
+					nodes: [
+						import("/./_app/pages/__layout.svelte-1bbcaadc.js"),
+						import("/./_app/pages/index.svelte-c76bd0d9.js")
+					],
+					page: {
+						host: location.host, // TODO this is redundant
+						path: "/",
+						query: new URLSearchParams(""),
+						params: {}
+					}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="svelte">
+
+
+<div id="layout"><div class="hidden" id="ref"></div>
+
+<div class="grid" style="\n\t\tgrid-template-areas: &quot;heading heading about settings language&quot; &quot;cHeadline cHeadline cHeadline cHeadline cHeadline&quot; &quot;cFirstMove cDifficulty cDifficulty cStart cStart&quot; &quot;pHeadline pHeadline pHeadline pHeadline pHeadline&quot; &quot;pCode pName pName pConnect pConnect&quot; &quot;pHost . . . .&quot; &quot;tHeadline tHeadline tHeadline tHeadline tHeadline&quot; &quot;tAll tContinue tContinue . .&quot;;\n\t\tgrid-template-columns: 0px 0px 0px 0px 0px;\n\t\tgrid-template-rows: 0px 0px 0px 0px 0px 0px 0px 0px;\n\t"><div id="container-cursor"><div id="cursor" style=""><div class="row"></div><div class="row"></div></div></div><div class="cell" style="grid-area: cFirstMove;">
+
+
+
+
+
+<div class="cell-select active" style="height: 0px"><button><i class="icon material-icons-round">looks_one</i><div><p class="text label">First Move:</p><p class="text bold">Random</p></div><i class="icon material-icons-round">arrow_drop_down</i></button><div class="options"><div class="container-cursor"><div class="cursor"></div></div><button class="selected"><div class="control"></div><p class="text bold">Random</p></button><button><div class="control"></div><p class="text bold">You</p></button><button><div class="control"></div><p class="text bold">Computer</p></button></div></div></div><div class="cell" style="grid-area: heading;">
+
+
+
+
+
+<div class="cell-text level-heading align-left"><i class="icon material-icons-round">sports_esports</i><p class="text heading">Play a Game of Chess</p></div></div><div class="cell" style="grid-area: about;">
+
+
+
+
+
+<button class="cell-button link" ><i class="icon material-icons-round">feed</i><i class="icon material-icons-round">chevron_right</i></button></div><div class="cell" style="grid-area: settings;">
+
+
+
+
+
+<button class="cell-button link" ><i class="icon material-icons-round">settings</i><i class="icon material-icons-round">chevron_right</i></button></div><div class="cell" style="grid-area: language;">
+
+
+
+
+
+<div class="cell-select" style="height: 0px"><button><i class="icon material-icons-round">public</i><div><p class="text label">Language:</p><p class="text bold">English</p></div><i class="icon material-icons-round">arrow_drop_down</i></button><div class="options"><div class="container-cursor"><div class="cursor"></div></div><button class="selected"><div class="control"></div><p class="text bold">English</p></button><button><div class="control"></div><p class="text bold">Deutsch</p></button><button><div class="control"></div><p class="text bold">Schwäbisch</p></button></div></div></div><div class="cell" style="grid-area: cHeadline;">
+
+
+
+
+
+<div class="cell-text level-headline align-left"><i class="icon material-icons-round">memory</i><p class="text headline">Versus Computer</p><div class="divider"></div><div class="info"><i class="icon material-icons-round">info_outline</i><p class="text caption">Multithreaded Stockfish 12 Engine</p></div></div></div><div class="cell" style="grid-area: cDifficulty;">
+
+
+
+
+
+<div class="cell-select" style="height: 0px"><button><i class="icon material-icons-round">model_training</i><div><p class="text label">Difficulty:</p><p class="text bold">Easy</p></div><i class="icon material-icons-round">arrow_drop_down</i></button><div class="options"><div class="container-cursor"><div class="cursor"></div></div><button class="selected"><div class="control"></div><p class="text bold">Easy</p></button><button><div class="control"></div><p class="text bold">Medium</p></button><button><div class="control"></div><p class="text bold">Hard</p></button><button><div class="control"></div><p class="text bold">Impossible</p></button></div></div></div><div class="cell" style="grid-area: cStart;">
+
+
+
+
+
+<button class="cell-button func" ><i class="icon material-icons-round">play_arrow</i><p class="text bold">Start Game</p></button></div><div class="cell" style="grid-area: pHeadline;">
+
+
+
+
+
+<div class="cell-text level-headline align-left"><i class="icon material-icons-round">connect_without_contact</i><p class="text headline">Versus Player</p><div class="divider"></div><div class="info"><i class="icon material-icons-round">info_outline</i><p class="text caption">P2P Connection via Peer.js/WebRTC</p></div></div></div><div class="cell" style="grid-area: pCode;">
+
+
+
+
+
+<div class="cell-input"><input type="text" name="code"  placeholder="" class="has-icon has-label"><div class="overlay"><i class="icon material-icons-round">vpn_key</i><div class="right"><p class="label">Lobby Code:</p><p class="placeholder">xertz</p><div class="line"></div></div></div></div></div><div class="cell" style="grid-area: pName;">
+
+
+
+
+
+<div class="cell-input"><input type="text" name="given-name"  placeholder="" class="has-icon has-label"><div class="overlay"><i class="icon material-icons-round">person</i><div class="right"><p class="label">Your Name:</p><p class="placeholder">Michael Faraday</p><div class="line"></div></div></div></div></div><div class="cell" style="grid-area: pConnect;">
+
+
+
+
+
+<button class="cell-button func" ><i class="icon material-icons-round">rss_feed</i><p class="text bold">Connect</p></button></div><div class="cell" style="grid-area: pHost;">
+
+
+
+
+
+<button class="cell-button link" ><i class="icon material-icons-round">dns</i><p class="text bold">Host own Lobby</p><i class="icon material-icons-round">chevron_right</i></button></div><div class="cell" style="grid-area: tHeadline;">
+
+
+
+
+
+<div class="cell-text level-headline align-left"><i class="icon material-icons-round">extension</i><p class="text headline">Training</p></div></div><div class="cell" style="grid-area: tAll;">
+
+
+
+
+
+<button class="cell-button link" ><i class="icon material-icons-round">format_list_bulleted</i><p class="text bold">All Puzzles</p><i class="icon material-icons-round">chevron_right</i></button></div><div class="cell" style="grid-area: tContinue;">
+
+
+
+
+
+<button class="cell-button func" disabled><i class="icon material-icons-round">fast_forward</i><p class="text bold">Continue Last</p></button></div></div></div>
+
+
+
+	
+</div>
+	</body>
+</html>
