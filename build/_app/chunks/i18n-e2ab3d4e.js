@@ -1,1 +1,0 @@
-import{_ as e}from"./preload-helper-13c00eaa.js";import{G as a,$ as o,T as n}from"./vendor-4bc98d00.js";function r(){a("en",(()=>e((()=>import("./en-8a154244.js")),[]))),a("de",(()=>e((()=>import("./de-bb99c72b.js")),[]))),o({fallbackLocale:"en",initialLocale:"en"})}function s(e){n.set(e)}function i(){let e;return n.subscribe((a=>e=a))(),e}export{i as g,r as i,s};
