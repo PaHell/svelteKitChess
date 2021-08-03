@@ -7,6 +7,7 @@
 
 <script>
 	import { blockH } from '$lib/../store.js';
+	// PROPS
 	export let active;
 	export let props;
 	const defaults = {
@@ -18,6 +19,7 @@
 	props = { ...defaults, ...props };
 	let expanded = false;
 	let hovered = 0;
+
 	export function onClick() {
 		expanded = !expanded;
 	}

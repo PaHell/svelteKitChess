@@ -2,4 +2,8 @@
 node_modules
 /.svelte-kit
 /package
+<<<<<<< HEAD
 /build
+=======
+/build
+>>>>>>> 596cd29b520d55620a6ac192fd0260dbf7855425

@@ -38,6 +38,7 @@
 	// PROPS
 	export let elements = false;
 	export let layout = false;
+
 	// DATA
 	let data = [];
 	let activeElemID = 0;
@@ -181,7 +182,9 @@
 		element.css = { y, x, w, h };
 	});
 	cursorShown = true;
+
 	// FUNCTIONS
+
 	function getElemID(x, y) {
 		if (y > gridHeight - 1 || x > gridWidth - 1 || y < 0 || x < 0) return -1;
 		return Object.keys(elements).indexOf(gridAreas[y][x]);

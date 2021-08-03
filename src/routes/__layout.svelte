@@ -14,9 +14,9 @@
 	let ref;
 	onMount(() => {
 		const { width, height, marginTop } = window.getComputedStyle(ref);
-		blockW.set(parseInt(width));
-		blockH.set(parseInt(height));
-		spaceL.set(parseInt(marginTop));
+		$blockW.set(parseInt(width));
+		$blockH.set(parseInt(height));
+		$spaceL.set(parseInt(marginTop));
 	});
 </script>
 
@@ -27,7 +27,7 @@
 </template>
 
 <style lang="stylus" global>
-	@import '../styles/app'
+	@import './src/styles/app'
 
 	#layout
 		height          100%
@@ -39,6 +39,6 @@
 	#ref
 		width  $SizeBlock
 		height $SizeBlock
-		margin $SpacingLarge
+		margin-top $SpacingLarge
 
 </style>
