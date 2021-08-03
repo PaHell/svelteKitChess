@@ -6,13 +6,9 @@
 </script>
 
 <script>
-	import { cellHeight } from '$lib/../store.js';
-	import { objToCss } from '$lib/../helpers.js';
-	import Cursor from '$lib/grid/cursor.svelte';
-
+	import { blockH } from '$lib/../store.js';
 	export let active;
 	export let props;
-	export let hideCursor;
 	const defaults = {
 		icon: '',
 		label: 'Select',
@@ -22,52 +18,41 @@
 	props = { ...defaults, ...props };
 	let expanded = false;
 	let hovered = 0;
-	let storeCellHeight;
-
-	export const onClick = () => {
+	export function onClick() {
 		expanded = !expanded;
-	};
-	export const onLeave = () => {
-		expanded = false;
+	}
+	export function onLeave() {
 		hovered = 0;
-		hideCursor = false;
-	};
-
+		expanded = false;
+	}
 	export function handleKeydown(event) {
-		let stopExecutionInParent = false;
+		let parentContinue = true;
 		if (expanded) {
 			const keys = Object.keys(props.options);
 			const index = keys.indexOf(props.selected);
 			switch (event.keyCode) {
-				case 38:
-					// up
+				case 38: // up
 					if (hovered > 0) hovered--;
 					else hovered = keys.length;
-					stopExecutionInParent = true;
+					parentContinue = false;
 					break;
-				case 40:
-					// down
+				case 40: // down
 					if (hovered < keys.length) hovered++;
 					else hovered = 0;
-					stopExecutionInParent = true;
+					parentContinue = false;
 					break;
-				case 13:
-					// enter
-					if (hovered !== 0) {
-						setSelected(keys[hovered - 1]);
-						stopExecutionInParent = true;
-					}
+				case 13: // enter
+					if (hovered !== 0) setSelected(keys[hovered - 1]);
 					break;
 			}
 		}
-		hideCursor = hovered !== 0;
-		return stopExecutionInParent;
+		return {
+			continue: parentContinue,
+			cursor: { x: 0, y: hovered }
+		};
 	}
-
 	function setSelected(key) {
 		props.selected = key;
-		expanded = false;
-		hideCursor = false;
 		hovered = 0;
 		if (props.onChange) props.onChange(key, props.options[key]);
 	}
@@ -77,9 +62,8 @@
 	.cell-select(
 		class:active,
 		class:expanded,
-		style="{`height: ${expanded ? (Object.keys(props.options).length + 1) * $cellHeight : $cellHeight}px`}")
-		Cursor(style="{objToCss({'margin-top': hovered * $cellHeight })}", shown="{expanded}")
-		button(on:click)
+		style="{`height: ${expanded ? (Object.keys(props.options).length + 1) * $blockH : $blockH}px`}")
+		button(on:click, class:hovered!="{expanded && hovered === 0}")
 			Icon {props.icon}
 			div
 				p.text.label {$_(props.label)}:
@@ -108,7 +92,6 @@
 		
 		> #container-cursor
 			width 100%
-
 			> #cursor
 				width  50%
 				height $SizeBlock
@@ -140,6 +123,9 @@
 						font-weight    $FW_Bold
 						color          $ColorBlackTextTri
 						letter-spacing .25px
+			
+			&.hovered > .icon:last-child
+				color $ColorAccentIcon !important
 		
 		> .options
 			flex 1
@@ -157,32 +143,36 @@
 					border-radius    100%
 					border           $WidthBorder solid $ColorIconTri
 					background-color $ColorBGLight
-					transition       border-color $TimeTrans
+					transition       border-color $TimeTrans, background-color $TimeTrans
 					
 					&:after
-						content ''
-						display block
-						width $FZ_IconSmall - 6 * $WidthBorder
-						height $FZ_IconSmall - 6 * $WidthBorder
-						margin 2 * $WidthBorder
+						content       ''
+						display       block
+						width         $FZ_IconSmall - 6 * $WidthBorder
+						height        $FZ_IconSmall - 6 * $WidthBorder
+						margin        2 * $WidthBorder
 						border-radius 100%
 				
-				&.hovered > .control
-					border-color $ColorIconPri
-				
-				&.selected > .control
-					border-color $ColorAccentIcon
-					&:after
+				&.selected					
+					> .control
+						border-color $ColorIconPri
+						&:after
+							background-color $ColorIconPri
+				&.hovered
+					> .control
+						border-color $ColorAccentIcon
+						
+					&.selected > .control:after
 						background-color $ColorAccentIcon
 						
-		&.active
-			> button > .icon
-				&:first-child
-					color $ColorAccentIcon
-				&:last-child
-					color $ColorIconPri
-						
+		&.active > button > .icon
+			&:first-child
+				color $ColorAccentIcon
+			&:last-child
+				color $ColorIconPri
+							
 		&.expanded
-			> button > .icon:last-child
-				transform rotateX(180deg)
+			> button
+				> .icon:last-child
+					transform rotateX(180deg)
 </style>

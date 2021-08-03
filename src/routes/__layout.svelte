@@ -9,14 +9,14 @@
 
 <script>
 	import { onMount } from 'svelte';
-	import { cellWidth, cellHeight, cellSpacing } from '../store.js';
+	import { blockW, blockH, spaceL } from '$src/store.js';
 
 	let ref;
 	onMount(() => {
 		const { width, height, marginTop } = window.getComputedStyle(ref);
-		cellWidth.set(parseInt(width));
-		cellHeight.set(parseInt(height));
-		cellSpacing.set(parseInt(marginTop));
+		blockW.set(parseInt(width));
+		blockH.set(parseInt(height));
+		spaceL.set(parseInt(marginTop));
 	});
 </script>
 

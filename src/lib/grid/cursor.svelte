@@ -1,11 +1,36 @@
+<script context="module">
+	import { blockW, blockH, spaceL } from '$src/store.js';
+</script>
+
 <script>
-	export let style;
-	export let shown = true;
+	export let style = {
+		w: 1, // width
+		h: 1, // height
+		x: 0, // left
+		y: 0 // top
+	};
+	export let transform = {
+		x: 0, // add x offset
+		y: 0, // add y offset
+		w: false, // override width
+		h: false // override height
+	};
+	let css = '';
+	$: css = `
+		width: ${(transform.w ? transform.w : style.w) * ($blockW + $spaceL) - $spaceL}px;
+		height: ${(transform.h ? transform.h : style.h) * ($blockH + $spaceL) - $spaceL}px;
+		margin:
+			${style.y * ($blockH + $spaceL) + transform.y * $blockH}px
+			0
+			0
+			${style.x * ($blockW + $spaceL) + transform.x * $blockW}px
+		;
+	`;
 </script>
 
 <template lang="pug">
 	#container-cursor
-		#cursor(style="{style}", class:hidden="{!shown}")
+		#cursor(style="{css}")
 			.row
 			.row
 </template>
@@ -18,16 +43,14 @@
 		height         0
 		position       absolute
 		z-index        24
-
 		> #cursor
 			display         flex
 			flex-direction  column
 			justify-content space-between
+			width           $SizeBlock
+			height          $SizeBlock
 			transition      width $TimeTrans, height $TimeTrans, margin $TimeTrans, opacity $TimeTrans
-			will-change     width, height, margin, opacity
-			
-			&.hidden
-				opacity .25
+			will-change     width, height, margin
 			
 			> .row
 				width           100%
@@ -41,7 +64,6 @@
 					width   $Radius
 					height  $Radius
 					border  0 solid $ColorAccent
-
 				&:first-child:before
 					border-width $WidthBorder 0 0 $WidthBorder
 					border-top-left-radius $Radius
