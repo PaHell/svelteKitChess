@@ -2,6 +2,7 @@ import sveltePreprocess from 'svelte-preprocess';
 import { replace } from 'svelte-preprocess';
 import autoprefixer from 'autoprefixer';
 import adapter from '@sveltejs/adapter-static';
+import path from 'path';
 /** @type {import('@sveltejs/kit').Config} */
 
 const production = process.env.NODE_ENV !== 'development';
@@ -12,6 +13,11 @@ const config = {
 		target: '#svelte',
 		//ssr: false,
 		vite: {
+			resolve: {
+				alias: {
+					$src: path.resolve('./src')
+				}
+			},
 			optimizeDeps: {
 				//include: ['$lib/grid/input.svelte'],
 			},

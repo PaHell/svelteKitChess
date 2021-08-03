@@ -1,6 +1,6 @@
 <script>
 	import { set as setLocale, get as getLocale } from '../i18n';
-	import Grid from '$lib/grid.svelte';
+	//import Grid from '$lib/grid.svelte';
 	let gridElements = {
 		cFirstMove: {
 			type: 'select',
@@ -140,5 +140,5 @@
 </script>
 
 <template lang="pug">
-	Grid(bind:elements="{gridElements}", layout="{gridLayout}")
+	//Grid(bind:elements="{gridElements}", layout="{gridLayout}")
 </template>

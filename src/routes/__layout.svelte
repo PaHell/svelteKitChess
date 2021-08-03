@@ -9,15 +9,40 @@
 
 <script>
 	import { onMount } from 'svelte';
-	import { cellWidth, cellHeight, cellSpacing } from '../store.js';
+	import {
+		blockW,
+		blockH,
+		blockS,
+		field,
+		border,
+		spaceM,
+		spaceS,
+		spaceL
+	} from '$src/store.js';
 
 	let ref;
+	/*
 	onMount(() => {
-		const { width, height, marginTop } = window.getComputedStyle(ref);
-		cellWidth.set(parseInt(width));
-		cellHeight.set(parseInt(height));
-		cellSpacing.set(parseInt(marginTop));
+		const {
+			width,
+			height,
+			paddingTop,
+			paddingLeft,
+			paddingRight,
+			marginLeft,
+			marginRight,
+			marginTop
+		} = window.getComputedStyle(ref);
+		$blockW.set(parseInt(width));
+		$blockH.set(parseInt(height));
+		$blockS.set(parseInt(paddingTop));
+		$field.set(parseInt(paddingLeft));
+		$border.set(parseInt(paddingRight));
+		$spaceM.set(parseInt(marginLeft));
+		$spaceS.set(parseInt(marginRight));
+		$spaceL.set(parseInt(marginTop));
 	});
+	*/
 </script>
 
 <template lang="pug">
@@ -27,7 +52,7 @@
 </template>
 
 <style lang="stylus" global>
-	@import '../styles/app'
+	@import './src/styles/app'
 
 	#layout
 		height          100%
@@ -39,6 +64,11 @@
 	#ref
 		width  $SizeBlock
 		height $SizeBlock
-		margin $SpacingLarge
+		padding-top $SizeBlockSmall
+		padding-left $SizeField
+		padding-right $WidthBorder
+		margin-left $Spacing
+		margin-right $SpacingSmall
+		margin-top $SpacingLarge
 
 </style>

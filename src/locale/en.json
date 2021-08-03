@@ -30,5 +30,12 @@
 		"training": "Training",
 		"list": "All Puzzles",
 		"continue": "Continue Last"
+	},
+	"game": {
+		"board_settings": {
+			"headline": "Board settings",
+			"fen": "FEN Notation",
+			"fen_placeholder": "rnbkqbnrpppppppp"
+		}
 	}
 }
