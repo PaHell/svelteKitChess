@@ -1,29 +1,48 @@
 {
+	"general": {
+		"language": "Schbrocha",
+		"select": {
+			"none": "Koi Auswahl"
+		}
+	},
 	"index": {
 		"title": "Zeid mit Schach vrblembera",
-		"language": "Schbrocha",
-		"vs_computer": "I gega dr Kombjuudr",
-		"vs_computer_info": "Bliddzgscheidr Abberad uff Zagg (Stockfish 12)",
-		"first_move": "Erschdes Zügle",
-		"first_move_random": "Zufällich",
-		"first_move_you": "I",
-		"first_move_computer": "Kombjuudr",
-		"difficulty": "Schwierigkeid",
-		"difficulty_easy": "Saubleed",
-		"difficulty_medium": "Oifach",
-		"difficulty_hard": "Nedd leichd",
-		"difficulty_impossible": "Omeeglich",
-		"start_game": "Afanga",
-		"vs_player": "I geg'a greeßrs Rindvieh",
-		"vs_player_info": "Direkdr Drahd (P2P)",
-		"lobby_code": "Schlissl",
-		"lobby_code_placeholder": "brägele",
-		"your_name": "Schbiddznoma",
-		"your_name_placeholder": "Käpsale",
-		"connect": "Verdrahda",
-		"host": "Hocketse macha",
-		"training": "Ieba",
-		"list": "Älle Iebonge",
-		"continue": "Fordsedze"
+		"computer": {
+			"heading": "I gega dr Kombjuudr",
+			"info": "Bliddzgscheidr Abberad uff Zagg (Stockfish 12)",
+			"first_move": {
+				"label": "Erschdes Zügle",
+				"random": "Zufällich",
+				"you": "nadierlich I",
+				"computer": "Kombjuudr"
+			},
+			"difficulty": {
+				"label": "Schwierigkeid",
+				"easy": "Saubleed",
+				"medium": "Oifach",
+				"hard": "Nedd leichd",
+				"impossible": "Omeeglich"
+			},
+			"start_game": "Afanga"
+		},
+		"player": {
+			"heading": "I geg' a greeßrs Rindvieh",
+			"info": "Direkdr Drahd (P2P/WebRTC)",
+			"lobby_code": {
+				"label": "Schlissl",
+				"placeholder": "brägele"
+			},
+			"nickname": {
+				"label": "Schbiddznoma",
+				"placeholder": "Käpsale"
+			},
+			"connect": "Verdrahda",
+			"host": "Hocketse macha"
+		},
+		"training": {
+			"heading": "Ieba",
+			"list_all": "Älle Iebonge",
+			"continue": "Fordsedze"
+		}
 	}
 }

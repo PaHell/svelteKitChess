@@ -1,13 +1,13 @@
 <svelte:options accessors={true} />
 
 <script context="module">
+	import { createEventDispatcher } from 'svelte';
 	import { _ } from 'svelte-i18n';
+	import { blockH } from '$lib/../store.js';
 	import Icon from '$lib/icon.svelte';
 </script>
 
 <script>
-	import { blockH } from '$lib/../store.js';
-	// PROPS
 	export let active;
 	export let props;
 	const defaults = {
@@ -17,18 +17,20 @@
 		selected: ''
 	};
 	props = { ...defaults, ...props };
+	const dispatch = createEventDispatcher();
 	let expanded = false;
 	let hovered = 0;
 
 	export function onClick() {
 		expanded = !expanded;
+		hovered = Object.keys(props.options).indexOf(props.selected) + 1;
+		updateCursor();
 	}
 	export function onLeave() {
-		hovered = 0;
 		expanded = false;
 	}
 	export function handleKeydown(event) {
-		let parentContinue = true;
+		let parentStop = false;
 		if (expanded) {
 			const keys = Object.keys(props.options);
 			const index = keys.indexOf(props.selected);
@@ -36,27 +38,37 @@
 				case 38: // up
 					if (hovered > 0) hovered--;
 					else hovered = keys.length;
-					parentContinue = false;
+					parentStop = true;
 					break;
 				case 40: // down
 					if (hovered < keys.length) hovered++;
 					else hovered = 0;
-					parentContinue = false;
+					parentStop = true;
 					break;
 				case 13: // enter
-					if (hovered !== 0) setSelected(keys[hovered - 1]);
+					if (hovered !== 0) {
+						setSelected(keys[hovered - 1]);
+						parentStop = true;
+					}
 					break;
 			}
 		}
-		return {
-			continue: parentContinue,
-			cursor: { x: 0, y: hovered }
-		};
+		updateCursor();
+		return parentStop;
+	}
+	function updateCursor() {
+		dispatch('cursor', {
+			y: expanded ? hovered : 0
+		});
 	}
 	function setSelected(key) {
-		props.selected = key;
-		hovered = 0;
-		if (props.onChange) props.onChange(key, props.options[key]);
+		if (key !== props.selected) {
+			props.selected = key;
+			if (props.onChange) props.onChange(key, props.options[key]);
+		}
+		// close
+		expanded = false;
+		updateCursor();
 	}
 </script>
 
@@ -69,7 +81,7 @@
 			Icon {props.icon}
 			div
 				p.text.label {$_(props.label)}:
-				p.text.bold {$_(props.options[props.selected])}
+				p.text.bold {$_(props.selected ? props.options[props.selected] : 'general.select.none')}
 			Icon arrow_drop_down
 		.options
 			+each('Object.entries(props.options) as [key, value], index')

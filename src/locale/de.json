@@ -1,29 +1,48 @@
 {
+	"general": {
+		"language": "Sprache",
+		"select": {
+			"none": "Keine Auswahl"
+		}
+	},
 	"index": {
 		"title": "Eine Runde Schach spielen",
-		"language": "Sprache",
-		"vs_computer": "Spieler gegen Computer",
-		"vs_computer_info": "Mehrkernige Stockfish 12 Engine",
-		"first_move": "Erster Zug",
-		"first_move_random": "Zufällig",
-		"first_move_you": "Ich",
-		"first_move_computer": "Computer",
-		"difficulty": "Schwierigkeit",
-		"difficulty_easy": "Einfach",
-		"difficulty_medium": "Mittel",
-		"difficulty_hard": "Schwer",
-		"difficulty_impossible": "Unmöglich",
-		"start_game": "Spiel starten",
-		"vs_player": "Spieler gegen Spieler",
-		"vs_player_info": "P2P Verbindung via Peer.js/WebRTC",
-		"lobby_code": "Sitzungsschlüssel",
-		"lobby_code_placeholder": "kafkaesk",
-		"your_name": "Mein Name",
-		"your_name_placeholder": "Johannes Kepler",
-		"connect": "Verbinden",
-		"host": "Sitzung erstellen",
-		"training": "Übungen",
-		"list": "Alle Übungen",
-		"continue": "Fortsetzen"
+		"computer": {
+			"heading": "Gegen Rechner",
+			"info": "Parallelisiertes Stockfish 12",
+			"first_move": {
+				"label": "Erster Zug",
+				"random": "Zufällig",
+				"you": "Ich",
+				"computer": "Computer"
+			},
+			"difficulty": {
+				"label": "Schwierigkeit",
+				"easy": "Einfach",
+				"medium": "Mittel",
+				"hard": "Schwer",
+				"impossible": "Unmöglich"
+			},
+			"start_game": "Spiel starten"
+		},
+		"player": {
+			"heading": "Gegen Spieler",
+			"info": "P2P Verbindung über Peer.js/WebRTC",
+			"lobby_code": {
+				"label": "Sitzungsschlüssel",
+				"placeholder": "kafkaesk"
+			},
+			"nickname": {
+				"label": "Spitzname",
+				"placeholder": "Johannes Kepler"
+			},
+			"connect": "Verbinden",
+			"host": "Eigene Sitzung"
+		},
+		"training": {
+			"heading": "Übungen",
+			"list_all": "Alle Übungen",
+			"continue": "Letzte fortsetzen"
+		}
 	}
 }

@@ -38,7 +38,7 @@
 			}
 		},
 		link: {
-			type: 'link',
+			type: 'button',
 			text: 'redesiigner',
 			value: 'http://felgrom.redesiigner.com'
 		},
@@ -86,8 +86,12 @@
 			type: 'select',
 			label: 'Starting Player',
 			icon: 'flag',
-			selected: 1,
-			options: ['Player 1', 'Player 2', 'Player 3']
+			selected: '2',
+			options: {
+				'1': 'Player 1',
+				'2': 'Player 2',
+				'3': 'Player 3'
+			}
 		}
 	};
 	// prettier-ignore

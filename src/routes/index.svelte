@@ -1,18 +1,7 @@
 <script>
 	import { set as setLocale, get as getLocale } from '../i18n';
-	//import Grid from '$lib/grid.svelte';
+	import Grid from '$lib/grid.svelte';
 	let gridElements = {
-		cFirstMove: {
-			type: 'select',
-			label: 'index.first_move',
-			icon: 'looks_one',
-			selected: 'random',
-			options: {
-				random: 'index.first_move_random',
-				you: 'index.first_move_you',
-				computer: 'index.first_move_computer'
-			}
-		},
 		heading: {
 			type: 'text',
 			text: 'index.title',
@@ -31,7 +20,7 @@
 		},
 		language: {
 			type: 'select',
-			label: 'index.language',
+			label: 'general.language',
 			icon: 'public',
 			selected: getLocale(),
 			options: {
@@ -44,25 +33,38 @@
 		cHeadline: {
 			type: 'text',
 			icon: 'memory',
-			text: 'index.vs_computer',
-			info: 'index.vs_computer_info'
+			text: 'index.computer.heading',
+			info: 'index.computer.info'
+		},
+		cFirstMove: {
+			autofocus: true,
+			//
+			type: 'select',
+			label: 'index.computer.first_move.label',
+			icon: 'looks_one',
+			selected: false,
+			options: {
+				random: 'index.computer.first_move.random',
+				you: 'index.computer.first_move.you',
+				computer: 'index.computer.first_move.computer'
+			}
 		},
 		cDifficulty: {
 			type: 'select',
-			label: 'index.difficulty',
+			label: 'index.computer.difficulty.label',
 			icon: 'model_training',
 			selected: 'easy',
 			options: {
-				easy: 'index.difficulty_easy',
-				medium: 'index.difficulty_medium',
-				hard: 'index.difficulty_hard',
-				impossible: 'index.difficulty_impossible'
+				easy: 'index.computer.difficulty.easy',
+				medium: 'index.computer.difficulty.medium',
+				hard: 'index.computer.difficulty.hard',
+				impossible: 'index.computer.difficulty.impossible'
 			}
 		},
 		cStart: {
 			type: 'button',
 			icon: 'play_arrow',
-			text: 'index.start_game',
+			text: 'index.computer.start_game',
 			value: () => {
 				console.log('starting game...');
 			}
@@ -70,29 +72,29 @@
 		pHeadline: {
 			type: 'text',
 			icon: 'connect_without_contact',
-			text: 'index.vs_player',
-			info: 'index.vs_player_info'
+			text: 'index.player.heading',
+			info: 'index.player.info'
 		},
 		pCode: {
 			type: 'input',
 			value: '',
-			label: 'index.lobby_code',
+			label: 'index.player.lobby_code.label',
 			name: 'code',
-			placeholder: 'index.lobby_code_placeholder',
+			placeholder: 'index.player.lobby_code.placeholder',
 			icon: 'vpn_key'
 		},
 		pName: {
 			type: 'input',
 			value: '',
-			label: 'index.your_name',
+			label: 'index.player.nickname.label',
 			name: 'given-name',
-			placeholder: 'index.your_name_placeholder',
+			placeholder: 'index.player.nickname.placeholder',
 			icon: 'person'
 		},
 		pConnect: {
 			type: 'button',
 			icon: 'rss_feed',
-			text: 'index.connect',
+			text: 'index.player.connect',
 			value: () => {
 				console.log('connecting...');
 			}
@@ -100,24 +102,24 @@
 		pHost: {
 			type: 'button',
 			icon: 'dns',
-			text: 'index.host',
+			text: 'index.player.host',
 			value: '/host'
 		},
 		tHeadline: {
 			type: 'text',
 			icon: 'extension',
-			text: 'index.training'
+			text: 'index.training.heading'
 		},
 		tAll: {
 			type: 'button',
 			icon: 'format_list_bulleted',
-			text: 'index.list',
+			text: 'index.training.list_all',
 			value: '/training'
 		},
 		tContinue: {
 			type: 'button',
 			icon: 'fast_forward',
-			text: 'index.continue',
+			text: 'index.training.continue',
 			value: () => {
 				console.log('continue training...');
 			},
@@ -140,5 +142,5 @@
 </script>
 
 <template lang="pug">
-	//Grid(bind:elements="{gridElements}", layout="{gridLayout}")
+	Grid(bind:elements="{gridElements}", layout="{gridLayout}")
 </template>

@@ -14,9 +14,9 @@
 	let ref;
 	onMount(() => {
 		const { width, height, marginTop } = window.getComputedStyle(ref);
-		$blockW.set(parseInt(width));
-		$blockH.set(parseInt(height));
-		$spaceL.set(parseInt(marginTop));
+		blockW.set(parseInt(width));
+		blockH.set(parseInt(height));
+		spaceL.set(parseInt(marginTop));
 	});
 </script>
 

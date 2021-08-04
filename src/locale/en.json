@@ -4,38 +4,50 @@
 		"de": "Deutsch",
 		"sw": "Schwäbisch"
 	},
+	"general": {
+		"language": "Language",
+		"select": {
+			"none": "None"
+		}
+	},
 	"index": {
 		"title": "Play a Game of Chess",
-		"language": "Language",
-		"vs_computer": "Versus Computer",
-		"vs_computer_info": "Multithreaded Stockfish 12 Engine",
-		"first_move": "First Move",
-		"first_move_random": "Random",
-		"first_move_you": "You",
-		"first_move_computer": "Computer",
-		"difficulty": "Difficulty",
-		"difficulty_easy": "Easy",
-		"difficulty_medium": "Medium",
-		"difficulty_hard": "Hard",
-		"difficulty_impossible": "Impossible",
-		"start_game": "Start Game",
-		"vs_player": "Versus Player",
-		"vs_player_info": "P2P Connection via Peer.js/WebRTC",
-		"lobby_code": "Lobby Code",
-		"lobby_code_placeholder": "xertz",
-		"your_name": "Your Name",
-		"your_name_placeholder": "Michael Faraday",
-		"connect": "Connect",
-		"host": "Host own Lobby",
-		"training": "Training",
-		"list": "All Puzzles",
-		"continue": "Continue Last"
-	},
-	"game": {
-		"board_settings": {
-			"headline": "Board settings",
-			"fen": "FEN Notation",
-			"fen_placeholder": "rnbkqbnr\\pppppppp"
+		"computer": {
+			"heading": "Versus Computer",
+			"info": "Multithreaded Stockfish 12 Engine",
+			"first_move": {
+				"label": "First Move",
+				"random": "Random",
+				"you": "You",
+				"computer": "Computer"
+			},
+			"difficulty": {
+				"label": "Difficulty",
+				"easy": "Easy",
+				"medium": "Medium",
+				"hard": "Hard",
+				"impossible": "Impossible"
+			},
+			"start_game": "Start Game"
+		},
+		"player": {
+			"heading": "Versus Player",
+			"info": "P2P Connection via Peer.js/WebRTC",
+			"lobby_code": {
+				"label": "Lobby Code",
+				"placeholder": "xertz"
+			},
+			"nickname": {
+				"label": "Your Name",
+				"placeholder": "Michael Faraday"
+			},
+			"connect": "Connect",
+			"host": "Host own Lobby"
+		},
+		"training": {
+			"heading": "Training",
+			"list_all": "All Puzzles",
+			"continue": "Continue Last"
 		}
 	}
 }

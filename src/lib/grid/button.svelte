@@ -28,6 +28,7 @@
 	}
 
 	const type = detectValueType(props.value);
+	if (type === 'url' && !props.icon) props.icon = 'public';
 
 	export function onClick(event) {
 		switch (type) {
@@ -77,6 +78,8 @@
 			font-size      $FZ_Button
 			text-transform uppercase
 			
+			&:first-child
+				margin-left .5 * ($SizeBlock - $FZ_Icon)
 			&:not(:first-child)
 				margin-right .5 * ($SizeBlock - $FZ_Icon)
 

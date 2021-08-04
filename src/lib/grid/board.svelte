@@ -1,6 +1,7 @@
 <svelte:options accessors={true} />
 
 <script context="module">
+	import { createEventDispatcher } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import Icon from '$lib/icon.svelte';
 </script>
@@ -11,54 +12,48 @@
 	const defaults = {};
 	props = { ...defaults, ...props };
 
+	const dispatch = createEventDispatcher();
 	const size = 8;
 	const board = [];
 	let hovered = 0;
 
-	export function onLeave() {
-		hovered = 0;
+	export function onEnter() {
+		updateCursor();
 	}
 
 	export function handleKeydown(event) {
-		let parentContinue = true;
+		let parentStop = false;
 		switch (event.keyCode) {
 			case 38: // up
 				if (hovered > size - 1) {
 					hovered -= size;
-					parentContinue = false;
+					parentStop = true;
 				}
 				break;
 			case 40: // down
 				if (hovered < Math.pow(size, 2) - size) {
 					hovered += size;
-					parentContinue = false;
+					parentStop = true;
 				}
 				break;
 			case 37: // left
 				if (hovered % size) {
 					hovered--;
-					parentContinue = false;
+					parentStop = true;
 				}
 				break;
 			case 39: // right
 				if (hovered % size !== size - 1) {
 					hovered++;
-					parentContinue = false;
+					parentStop = true;
 				}
 				break;
 			case 13: // enter
-				console.log('enter:', hovered, board[hovered].x, board[hovered].y)
+				console.log('enter:', hovered, board[hovered].x, board[hovered].y);
 				break;
 		}
-		return {
-			continue: parentContinue,
-			cursor: {
-				x: hovered % size,
-				y: Math.trunc(hovered / size),
-				w: 1,
-				h: 1
-			}
-		};
+		updateCursor();
+		return parentStop;
 	}
 
 	for (let y = 0; y < size; y++) {
@@ -66,10 +61,19 @@
 			board.push({
 				x,
 				y,
-				color: y % 2 && x % 2 || !(y % 2) && !(x % 2) ? 'white' : 'black',
-				name: `i:${y * size + x}, (${x}|${y})`
+				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black',
+				name: `${y * size + x}/(${x}|${y})`
 			});
 		}
+	}
+
+	function updateCursor() {
+		dispatch('cursor', {
+			x: hovered % size,
+			y: Math.trunc(hovered / size),
+			w: 1,
+			h: 1
+		});
 	}
 </script>
 
@@ -83,7 +87,7 @@
 			.legend.col(style="{`grid-area: col${i}`}")
 				+each('Array(size) as _, i')
 					p.text.caption.bold { String.fromCharCode(65 + i) }
-		.container
+		.container(class:active)
 			+each('board as field, index')
 				.field(class="{field.color}", class:hovered="{index === hovered}") {field.name}
 </template>
@@ -147,6 +151,9 @@
 			> .field
 				border-radius $RadiusSmall
 				transition    box-shadow $TimeTrans
+				// testing
+				line-height   $SizeField
+				text-align    center
 				
 				&:nth-child(1)
 					border-top-left-radius $Radius
@@ -164,7 +171,11 @@
 					background-color $ColorBG
 				
 				&.hovered
-					position   relative
-					box-shadow $ShadowRaised
-					
+					position    relative
+					color       $ColorAccent
+					font-weight $FW_Bold
+			
+			&.active > .field.hovered
+				box-shadow  $ShadowRaised
+
 </style>

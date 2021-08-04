@@ -41,9 +41,8 @@
 
 	// DATA
 	let data = [];
-	let activeElemID = 0;
+	let activeElemID = -1;
 	let currentCursorTransform = { x: 0, y: 0 };
-	let cursorShown = false;
 	// grid specs
 	let gridWidth = layout[0].length - 1;
 	let gridHeight = layout.length - 1;
@@ -63,9 +62,7 @@
 		grid-template-columns: ${gridColumns
 			.map((w) => `${w * ($blockW + $spaceL) - $spaceL}px`)
 			.join(' ')};
-		grid-template-rows: ${gridRows
-			.map((h) => `${h * ($blockH + $spaceL) - $spaceL}px`)
-			.join(' ')};
+		grid-template-rows: ${gridRows.map((h) => `${h * ($blockH + $spaceL) - $spaceL}px`).join(' ')};
 	`;
 	// START
 	// fill data object
@@ -180,8 +177,11 @@
 		const { x, y } = getOffset(element.x[0], element.y[0]);
 		const { w, h } = getSize(element.x, element.y);
 		element.css = { y, x, w, h };
+		if (elements[element.name].autofocus) setActiveElem(index);
 	});
-	cursorShown = true;
+	onMount(() => {
+		if (activeElemID === -1) setActiveElem(0)
+	});
 
 	// FUNCTIONS
 
@@ -222,16 +222,23 @@
 		}
 		return size;
 	}
-	function setActiveElem(event, elemID) {
-		data[activeElemID].ref.onLeave?.(event);
+	function onTransformCursor(event) {
+		currentCursorTransform = { ...currentCursorTransform, ...event.detail };
+	}
+	function setActiveElem(elemID, event = {}) {
+		data[activeElemID]?.ref.onLeave?.(event);
+		currentCursorTransform = {
+			x: 0,
+			y: 0,
+			w: false,
+			h: false
+		};
 		activeElemID = elemID;
-		currentCursorTransform = { x: 0, y: 0 };
 		data[activeElemID].ref.onEnter?.(event);
 	}
 	function onClick(event, elemID) {
-		if (elemID !== activeElemID) setActiveElem(event, elemID);
+		if (elemID !== activeElemID) setActiveElem(elemID, event);
 		data[activeElemID].ref.onClick?.(event);
-		currentCursorTransform = { x: 0, y: 0 };
 	}
 	function handleKeydown(event) {
 		const keyCodesDir = {
@@ -242,8 +249,7 @@
 		};
 		//console.warn(event.keyCode);
 		const compResponse = data[activeElemID].ref.handleKeydown?.(event);
-		if (compResponse?.cursor) currentCursorTransform = compResponse.cursor;
-		if (compResponse === undefined || compResponse?.continue) {
+		if (!compResponse) {
 			switch (event.keyCode) {
 				// dir
 				case 37:
@@ -252,7 +258,7 @@
 				case 40:
 					event.preventDefault();
 					const newActiveElemID = data[activeElemID][keyCodesDir[event.keyCode]];
-					if (newActiveElemID !== undefined) setActiveElem(event, newActiveElemID);
+					if (newActiveElemID !== undefined) setActiveElem(newActiveElemID, event);
 					break;
 				// enter key
 				case 13:
@@ -265,10 +271,11 @@
 		}
 	}
 </script>
+
 <svelte:window on:keydown={handleKeydown} />
 <template lang="pug">
 	.grid(style="{gridCSS}")
-		+if('{cursorShown}')
+		+if('activeElemID !== -1')
 			Cursor(
 				style="{data[activeElemID].css}",
 				transform="{currentCursorTransform}")
@@ -279,8 +286,10 @@
 					bind:props="{elements[element.name]}",
 					bind:this="{element.ref}",
 					active="{activeElemID === i}",
-					on:click!="{(e) => onClick(e, i)}")
+					on:click!="{(e) => onClick(e, i)}",
+					on:cursor="{onTransformCursor}")
 </template>
+
 <style lang="stylus" global>
 	.grid
 		display             grid
