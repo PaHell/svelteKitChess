@@ -42,7 +42,7 @@
 			type: 'select',
 			label: 'index.computer.first_move.label',
 			icon: 'looks_one',
-			selected: false,
+			selected: 'random',
 			options: {
 				random: 'index.computer.first_move.random',
 				you: 'index.computer.first_move.you',

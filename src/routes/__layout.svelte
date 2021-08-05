@@ -9,14 +9,32 @@
 
 <script>
 	import { onMount } from 'svelte';
-	import { blockW, blockH, spaceL } from '$src/store.js';
+	import {
+		blockW, blockH, blockS,
+		spaceS, spaceM, spaceL,
+		field,
+		border
+	} from '$src/store.js';
 
 	let ref;
 	onMount(() => {
-		const { width, height, marginTop } = window.getComputedStyle(ref);
+		const {
+			width,
+			height,
+			paddingTop,
+			paddingBottom,
+			marginTop,
+			marginRight,
+			marginBottom,
+			marginLeft } = window.getComputedStyle(ref);
 		blockW.set(parseInt(width));
 		blockH.set(parseInt(height));
-		spaceL.set(parseInt(marginTop));
+		blockS.set(parseInt(paddingTop));
+		field.set(parseInt(paddingBottom));
+		spaceS.set(parseInt(marginTop));
+		spaceM.set(parseInt(marginRight));
+		spaceL.set(parseInt(marginBottom));
+		border.set(parseInt(marginLeft));
 	});
 </script>
 
@@ -37,8 +55,10 @@
 		justify-content center
 	
 	#ref
-		width  $SizeBlock
+		width $SizeBlock
 		height $SizeBlock
-		margin-top $SpacingLarge
+		padding-top $SizeBlockSmall
+		padding-bottom $SizeField
+		margin $SpacingSmall $Spacing $SpacingLarge $WidthBorder
 
 </style>

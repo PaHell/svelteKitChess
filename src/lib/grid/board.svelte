@@ -4,6 +4,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import Icon from '$lib/icon.svelte';
+	import { blockS, field, border } from '$src/store.js';
 </script>
 
 <script>
@@ -69,10 +70,10 @@
 
 	function updateCursor() {
 		dispatch('cursor', {
-			x: hovered % size,
-			y: Math.trunc(hovered / size),
-			w: 1,
-			h: 1
+			x: $blockS + ($field + $border) * (hovered % size),
+			y: $blockS + ($field + $border) * (Math.trunc(hovered / size)),
+			w: $field + 2 * $border,
+			h: $field + 2 * $border
 		});
 	}
 </script>
@@ -93,15 +94,13 @@
 </template>
 
 <style lang="stylus" global>
-	$SizeField = 1.125 * $SizeBlock
-	$SizeLegend = $SizeBlockSmall
 	.board
 		display          grid
 		grid-template-areas   ".    col0      .   "\
 		                      "row0 container row1"\
 		                      ".    col1      .   "
-		grid-template-columns $SizeLegend (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeLegend
-		grid-template-rows    $SizeLegend (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeLegend
+		grid-template-columns $SizeBlockSmall (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeBlockSmall
+		grid-template-rows    $SizeBlockSmall (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeBlockSmall
 		width            100%
 		height           100%
 		background-color transparent !important
@@ -118,8 +117,8 @@
 				
 				> .text
 					width        $SizeField + $WidthBorder
-					height       $SizeLegend
-					line-height  $SizeLegend + 2 * $LHC
+					height       $SizeBlockSmall
+					line-height  $SizeBlockSmall + 2 * $LHC
 					margin-right $WidthBorder
 					
 					&:first-child
@@ -130,7 +129,7 @@
 				flex-direction column
 
 				> .text
-					width         $SizeLegend
+					width         $SizeBlockSmall
 					height        $SizeField + $WidthBorder
 					line-height   $SizeField + 2 * $LHC
 					margin-bottom $WidthBorder
@@ -176,6 +175,6 @@
 					font-weight $FW_Bold
 			
 			&.active > .field.hovered
-				box-shadow  $ShadowRaised
+				box-shadow $ShadowRaised
 
 </style>

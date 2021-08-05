@@ -64,7 +64,7 @@
 			.join(' ')};
 		grid-template-rows: ${gridRows.map((h) => `${h * ($blockH + $spaceL) - $spaceL}px`).join(' ')};
 	`;
-	// START
+	// LOAD
 	// fill data object
 	for (let y = 0; y < gridHeight; y++) {
 		for (let x = 0; x < gridWidth; x++) {
@@ -177,10 +177,13 @@
 		const { x, y } = getOffset(element.x[0], element.y[0]);
 		const { w, h } = getSize(element.x, element.y);
 		element.css = { y, x, w, h };
-		if (elements[element.name].autofocus) setActiveElem(index);
+		if (elements[element.name].autofocus) activeElemID = index;
 	});
+
+	// MOUNTED
 	onMount(() => {
-		if (activeElemID === -1) setActiveElem(0)
+		if (activeElemID === -1) setActiveElem(0);
+		else setActiveElem(activeElemID);
 	});
 
 	// FUNCTIONS
@@ -273,6 +276,7 @@
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
+
 <template lang="pug">
 	.grid(style="{gridCSS}")
 		+if('activeElemID !== -1')
