@@ -1,10 +1,5 @@
 <script context="module">
-	import {
-		blockW, blockH, blockS,
-		spaceS, spaceM, spaceL,
-		field,
-		border
-	} from '$src/store.js';
+	import { blockW, blockH, blockS, spaceS, spaceM, spaceL, field, border } from '$src/store.js';
 </script>
 
 <script>
@@ -22,8 +17,8 @@
 	};
 	let css = '';
 	$: css = `
-		width: ${transform.w ? transform.w : (style.w * ($blockW + $spaceL) - $spaceL)}px;
-		height: ${transform.h ? transform.h : (style.h * ($blockH + $spaceL) - $spaceL)}px;
+		width: ${transform.w ? transform.w : style.w * ($blockW + $spaceL) - $spaceL}px;
+		height: ${transform.h ? transform.h : style.h * ($blockH + $spaceL) - $spaceL}px;
 		margin:
 			${style.y * ($blockH + $spaceL) + transform.y}px
 			0

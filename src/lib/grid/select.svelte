@@ -58,7 +58,7 @@
 	}
 	function updateCursor() {
 		dispatch('cursor', {
-			y: expanded ? (hovered * $blockH) : 0
+			y: expanded ? hovered * $blockH : 0
 		});
 	}
 	function setSelected(key) {

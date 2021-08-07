@@ -13,6 +13,26 @@ const config = {
 		target: '#svelte',
 		//ssr: false,
 		vite: {
+			server: {
+				cors: {
+					origin: ['localhost:3000'],
+					methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+					preflightContinue: false,
+					optionsSuccessStatus: 204
+				}
+			},
+			plugins: [
+				{
+					name: 'configure-server',
+					configureServer(server) {
+						server.middlewares.use((_req, res, next) => {
+							res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+							res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+							next();
+						});
+					}
+				}
+			],
 			resolve: {
 				alias: {
 					$src: path.resolve('./src')
@@ -26,7 +46,6 @@ const config = {
 			}
 		},
 		adapter: adapter({
-			// default options are shown
 			pages: 'build',
 			assets: 'build',
 			fallback: null

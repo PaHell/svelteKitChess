@@ -1,8 +1,17 @@
 <script>
+	import { onMount } from 'svelte';
 	import Grid from '$lib/grid.svelte';
+	import Stockfish from 'stockfish.wasm';
 	let gridElements = {
 		board: {
-			type: 'board'
+			type: 'board',
+			pieces: [
+				{ type: 'r', pos: 11 },
+				{ type: 'b', pos: 21 },
+				{ type: 'n', pos: 35 },
+				{ type: 'q', pos: 51 },
+				{ type: 'k', pos: 63 }
+			]
 		},
 		headline: {
 			type: 'text',
@@ -26,6 +35,16 @@
 		[ 1, 'board', 'fen'     ],
 		[ 6, 'board', '.'       ],
 	];
+
+	// MOUNTED
+	onMount(() => {
+		Stockfish().then((sf) => {
+			sf.addMessageListener((line) => {
+				console.log(line);
+			});
+			sf.postMessage('uci');
+		});
+	});
 </script>
 
 <template lang="pug">

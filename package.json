@@ -21,7 +21,7 @@
 		"prettier": "~2.2.1",
 		"prettier-plugin-svelte": "^2.2.0",
 		"pug": "^3.0.2",
-		"stockfish": "github:nmrugg/stockfish.js",
+		"stockfish.wasm": "^0.10.0",
 		"stylus": "^0.54.8",
 		"svelte": "^3.34.0",
 		"svelte-i18n": "^3.3.9",

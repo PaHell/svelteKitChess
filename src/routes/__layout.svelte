@@ -9,12 +9,7 @@
 
 <script>
 	import { onMount } from 'svelte';
-	import {
-		blockW, blockH, blockS,
-		spaceS, spaceM, spaceL,
-		field,
-		border
-	} from '$src/store.js';
+	import { blockW, blockH, blockS, spaceS, spaceM, spaceL, field, border } from '$src/store.js';
 
 	let ref;
 	onMount(() => {
@@ -26,7 +21,8 @@
 			marginTop,
 			marginRight,
 			marginBottom,
-			marginLeft } = window.getComputedStyle(ref);
+			marginLeft
+		} = window.getComputedStyle(ref);
 		blockW.set(parseInt(width));
 		blockH.set(parseInt(height));
 		blockS.set(parseInt(paddingTop));

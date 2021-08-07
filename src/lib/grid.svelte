@@ -182,8 +182,10 @@
 
 	// MOUNTED
 	onMount(() => {
-		if (activeElemID === -1) setActiveElem(0);
-		else setActiveElem(activeElemID);
+		setTimeout(() => {
+			if (activeElemID === -1) setActiveElem(0);
+			else setActiveElem(activeElemID);
+		}, 0);
 	});
 
 	// FUNCTIONS
@@ -225,8 +227,9 @@
 		}
 		return size;
 	}
-	function onTransformCursor(event) {
-		currentCursorTransform = { ...currentCursorTransform, ...event.detail };
+	function onTransformCursor({ detail }) {
+		console.log('component modifying cursor', { ...detail });
+		currentCursorTransform = { ...currentCursorTransform, ...detail };
 	}
 	function setActiveElem(elemID, event = {}) {
 		data[activeElemID]?.ref.onLeave?.(event);

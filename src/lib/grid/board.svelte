@@ -10,7 +10,9 @@
 <script>
 	export let active;
 	export let props;
-	const defaults = {};
+	const defaults = {
+		pieces: []
+	};
 	props = { ...defaults, ...props };
 
 	const dispatch = createEventDispatcher();
@@ -71,7 +73,7 @@
 	function updateCursor() {
 		dispatch('cursor', {
 			x: $blockS + ($field + $border) * (hovered % size),
-			y: $blockS + ($field + $border) * (Math.trunc(hovered / size)),
+			y: $blockS + ($field + $border) * Math.trunc(hovered / size),
 			w: $field + 2 * $border,
 			h: $field + 2 * $border
 		});
@@ -79,7 +81,7 @@
 </script>
 
 <template lang="pug">
-	.board
+	.container-board
 		+each('Array(2) as _, i')
 			.legend.row(style="{`grid-area: row${i}`}")
 				+each('Array(size) as _, i')
@@ -88,23 +90,35 @@
 			.legend.col(style="{`grid-area: col${i}`}")
 				+each('Array(size) as _, i')
 					p.text.caption.bold { String.fromCharCode(65 + i) }
-		.container(class:active)
+		.board(class:active)
 			+each('board as field, index')
 				.field(class="{field.color}", class:hovered="{index === hovered}") {field.name}
+		.pieces
+			+each('props.pieces as piece')
+				.container
+					button(style!="{`margin:\
+						${Math.trunc(piece.pos / size) * ($field + $border)}px\
+						0\
+						0\
+						${(piece.pos % size) * ($field + $border)}px\
+					;`}")
+						p.text.bold {piece.type}
 </template>
 
 <style lang="stylus" global>
-	.board
-		display          grid
-		grid-template-areas   ".    col0      .   "\
-		                      "row0 container row1"\
-		                      ".    col1      .   "
-		grid-template-columns $SizeBlockSmall (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeBlockSmall
-		grid-template-rows    $SizeBlockSmall (8 * ($SizeField + $WidthBorder) + $WidthBorder) $SizeBlockSmall
-		width            100%
-		height           100%
-		background-color transparent !important
-		box-shadow       none !important
+	$SizeBoard = (8 * ($SizeField + $WidthBorder) + $WidthBorder)
+	.container-board
+		display               grid
+		grid-template-areas   "pieces col0  .   "\
+		                      "row0   board row1"\
+		                      ".      col1  .   "
+		grid-template-columns $SizeBlockSmall $SizeBoard $SizeBlockSmall
+		grid-template-rows    $SizeBlockSmall $SizeBoard $SizeBlockSmall
+		width                 100%
+		height                100%
+		background-color      transparent !important
+		box-shadow            none !important
+		position              static !important
 		
 		> .legend
 			
@@ -137,8 +151,8 @@
 					&:first-child
 						margin-top $WidthBorder
 
-		> .container
-			grid-area             container
+		> .board
+			grid-area             board
 			display               grid
 			grid-template-columns repeat(8, $SizeField)
 			grid-template-rows    repeat(8, $SizeField)
@@ -176,5 +190,27 @@
 			
 			&.active > .field.hovered
 				box-shadow $ShadowRaised
-
+				
+		> .pieces
+			grid-area pieces
+			width     $SizeBoard
+			height    $SizeBoard
+			margin    $SizeBlockSmall 0 0 $SizeBlockSmall
+			padding   $WidthBorder 0 0 $WidthBorder
+			position  relative
+			
+			> .container
+				width  0
+				height 0
+			
+				> button
+					width            $SizeField
+					height           $SizeField
+					background-color red
+					border-radius    ($Radius - 2px)
+					
+					> .text
+						text-align  center
+						line-height $SizeField
+						font-size   $FZ_Heading
 </style>
