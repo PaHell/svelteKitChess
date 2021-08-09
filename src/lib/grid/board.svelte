@@ -11,7 +11,7 @@
 	export let active;
 	export let props;
 	const defaults = {
-		pieces: []
+		pieces: new Map()
 	};
 	props = { ...defaults, ...props };
 
@@ -65,7 +65,7 @@
 				x,
 				y,
 				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black',
-				name: `${y * size + x}/(${x}|${y})`
+				index: x + y * 8
 			});
 		}
 	}
@@ -85,16 +85,17 @@
 		+each('Array(2) as _, i')
 			.legend.row(style="{`grid-area: row${i}`}")
 				+each('Array(size) as _, i')
-					p.text.caption.bold { i+1 }
+					p.text.caption.bold { size-i }
 		+each('Array(2) as _, i')
 			.legend.col(style="{`grid-area: col${i}`}")
 				+each('Array(size) as _, i')
 					p.text.caption.bold { String.fromCharCode(65 + i) }
 		.board(class:active)
 			+each('board as field, index')
-				.field(class="{field.color}", class:hovered="{index === hovered}") {field.name}
+				.field(class="{field.color}", class:hovered="{index === hovered}")
+					p.text.caption {index}
 		.pieces
-			+each('props.pieces as piece')
+			+each('[...props.pieces.values()] as piece')
 				.container
 					button(style!="{`margin:\
 						${Math.trunc(piece.pos / size) * ($field + $border)}px\
@@ -102,7 +103,7 @@
 						0\
 						${(piece.pos % size) * ($field + $border)}px\
 					;`}")
-						p.text.bold {piece.type}
+						img(src="{`pieces/${piece.type}.svg`}")
 </template>
 
 <style lang="stylus" global>
@@ -165,8 +166,8 @@
 				border-radius $RadiusSmall
 				transition    box-shadow $TimeTrans
 				// testing
-				line-height   $SizeField
-				text-align    center
+				//line-height   $SizeField
+				//text-align    center
 				
 				&:nth-child(1)
 					border-top-left-radius $Radius
@@ -206,11 +207,12 @@
 				> button
 					width            $SizeField
 					height           $SizeField
-					background-color red
-					border-radius    ($Radius - 2px)
+					//background-color red
+					//border-radius    ($Radius - 2px)
+					transition       margin $TimeTrans
 					
-					> .text
-						text-align  center
-						line-height $SizeField
-						font-size   $FZ_Heading
+					> img
+						width 100%
+						height 100%
+						padding $Spacing
 </style>
