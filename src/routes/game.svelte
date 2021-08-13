@@ -5,10 +5,21 @@
 	let gridElements = {
 		board: {
 			type: 'board',
-			pieces: new Map([
-				[8, { type: 'p', pos: 27 }],
-				[9, { type: 'P', pos: 36 }]
-			])
+			pieces: new Map(),
+			captured: {},
+			turn: 1,
+			players: [
+				{
+					type: 'c',
+					name: 'Stockfish 12',
+					level: 'Hard',
+				},
+				{
+					type: 'p',
+					name: 'David Noah',
+					level: '420',
+				},
+			]
 		},
 		headline: {
 			type: 'text',
@@ -30,24 +41,31 @@
 		[ 0, 8      , 4         ],
 		[ 1, 'board', 'headline'],
 		[ 1, 'board', 'fen'     ],
-		[ 6, 'board', '.'       ],
+		[ 7, 'board', '.'       ],
 	];
-
 	let chess;
-	let lastBestMove;
 	function onMessage(msg) {
 		const split = msg.split(' ');
 		switch (split[0]) {
 			case 'bestmove':
 				console.log(`bestmove: %c${split[1]}`, 'color: red;');
-				const changes = chess.move(gridElements.board.pieces, split[1]);
+				const [
+					changes,
+					flag
+				] = chess.move(gridElements.board.pieces, split[1]);
+				// process changes
 				changes.forEach((val, key) => {
-					console.log('change:', { key, ...val });
+					if (val.pos === -1) {
+						if (gridElements.board.captured[val.type] > 0) {
+							gridElements.board.captured[val.type]++;
+						} else gridElements.board.captured[val.type] = 1;
+					}
 					gridElements.board.pieces.set(key, val);
 				});
+				// force reactivity
 				gridElements.board.pieces = gridElements.board.pieces;
-				//console.log(`ponder  : %c${split[3]}`, 'color: red;');
-				chess.bestmove();
+				// next move
+				//setTimeout(chess.bestmove(), 1000);
 				break;
 			case '':
 			case 'id':
@@ -56,19 +74,21 @@
 				//console.log(`%c${msg}`, 'color: gray;');
 				break;
 			case 'info':
-				console.log(`%c${msg}`, 'color: lightgreen;');
+				if (split[1] !== 'depth') console.log(`%c${msg}`, 'color: lightgreen;');
+				else console.log(`%c${msg}`, 'color: green;');
 				break;
 			default:
 				console.log(`%c${msg}`, 'color: yellow;');
 		}
 	}
 	let fen = '4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17';
+	fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 	fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1';
 	// MOUNTED
 	onMount(() => {
 		setTimeout(() => {
 			chess = new Chess(onMessage);
-			gridElements.board.pieces = chess.new(fen, 15);
+			gridElements.board.pieces = chess.new(fen, 1);
 			chess.bestmove();
 		}, 2000);
 	});

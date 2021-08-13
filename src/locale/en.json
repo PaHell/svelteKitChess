@@ -49,5 +49,11 @@
 			"list_all": "All Puzzles",
 			"continue": "Continue Last"
 		}
+	},
+	"game": {
+		"board": {
+			"points": "Pts",
+			"level": "Lvl"
+		}
 	}
 }

@@ -56,14 +56,13 @@ export default class {
 	}
 
 	getPieceByPos(pieceMap, pos) {
-		let match = { key: -1, val: undefined };
+		let match = { key: -1, val: { type: undefined, pos }};
 		pieceMap.forEach((val, key) => {
 			if (val.pos === pos) {
 				match = { key, val };
 				//break;
 			}
 		});
-		console.log(match);
 		return match;
 	}
 
@@ -73,23 +72,33 @@ export default class {
 
 	move(pieceMap, lan) {
 		this.moves.push(lan);
-		console.table(this.moves);
 		this.send(`position fen ${this.fen} moves ${this.moves.join(' ')}`);
-		this.send('d');
+		//this.send('d');
 		const fromTo = Array.from(lan).map((char) =>
 			this.isNumeric(char) ? 8 - parseInt(char) : char.charCodeAt(0) - 'a'.charCodeAt(0)
 		);
 		const from = fromTo[0] + fromTo[1] * 8;
 		const to = fromTo[2] + fromTo[3] * 8;
-		// CHANGES
+		// RETURN VALUES
 		const changes = new Map();
+		let flag = false;
 		// get Pieces
 		const movPiece = this.getPieceByPos(pieceMap, from);
 		const capPiece = this.getPieceByPos(pieceMap, to);
+		if (movPiece.val.type.toUpperCase() === 'K') console.warn('KING MOVED');
 		// move primary piece
 		changes.set(movPiece.key, { ...movPiece.val, pos: to });
-		if (capPiece.key !== -1) changes.set(capPiece.key, { ...capPiece.val, pos: -1 });
+		if (capPiece.key !== -1) {
+			changes.set(capPiece.key, { ...capPiece.val, pos: -1 });
+			flag = `captured ${capPiece.val.type}`;
+		}
+		console.table({
+			lan,
+			move: `${from} to ${to}`,
+			flag,
+			changes: [...changes.values()].map((val) => `${val.type} to ${val.pos}`).join(', '),
+		});
 		// RETURN
-		return changes;
+		return [changes, flag];
 	}
 }
