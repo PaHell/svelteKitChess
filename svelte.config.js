@@ -35,7 +35,7 @@ const config = {
 			],
 			resolve: {
 				alias: {
-					$src: path.resolve('./src')
+					$src: path.resolve('./src'),
 				}
 			},
 			optimizeDeps: {

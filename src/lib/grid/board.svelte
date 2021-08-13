@@ -40,6 +40,7 @@
 		counter[1].push(props.captured[key] || 0); 
 		return counter;
 	}, [[], []]);
+
 	for (let y = 0; y < size; y++) {
 		for (let x = 0; x < size; x++) {
 			board.push({
@@ -50,6 +51,7 @@
 			});
 		}
 	}
+
 	export function onEnter() {
 		updateCursor();
 	}
@@ -87,6 +89,7 @@
 		updateCursor();
 		return parentStop;
 	}
+
 	function updateCursor() {
 		dispatch('cursor', {
 			x: $blockS + ($field + $border) * (hovered % size),
@@ -95,6 +98,7 @@
 			h: $field + 2 * $border
 		});
 	}
+
 	function onPieceClick(event, piece) {
 		hovered = piece.pos;
 		updateCursor();
@@ -269,11 +273,11 @@
 						
 						&:not(:last-child)
 							margin-right $SpacingText
-						
 						&:first-child
 							color $ColorBlackTextSec
 						&:last-child
 							color $ColorBlackTextTri
+
 					&.show
 						background-color $ColorBGLight
 						
@@ -309,6 +313,7 @@
 					
 					&:first-child
 						margin-top $WidthBorder
+
 		> .board
 			grid-area             board
 			display               grid
@@ -374,6 +379,5 @@
 						padding $Spacing
 			
 					&.captured
-						opacity 0
-				
+						opacity 0			
 </style>
