@@ -2,16 +2,19 @@
 
 <script context="module">
 	import { createEventDispatcher } from 'svelte';
+	import Iconify from '@iconify/svelte';
 	import { _ } from 'svelte-i18n';
 	import { blockS, field, border } from '$src/store.js';
 	import Icon from '$lib/icon.svelte';
+	import Piece from '$lib/grid/piece.svelte';
+
 </script>
 
 <script>
 	export let active;
 	export let props;
 	const defaults = {
-		pieces: new Map(),
+		pieces: [],
 		captured: {},
 		turn: -1,
 		playing: -1,
@@ -22,6 +25,7 @@
 	const size = 8;
 	const board = [];
 	let hovered = 0;
+	let activePieceIndex = -1;
 	const pieceValues = {
 		p: 1,
 		n: 3,
@@ -30,16 +34,22 @@
 		q: 9
 	};
 	let capturedSum;
-	$: capturedSum = Object.keys(props.captured).reduce((counter, key) => {
-		counter[/[A-Z]/.test(key) ? 0 : 1] += pieceValues[key.toLowerCase()] * props.captured[key]; 
-		return counter;
-	}, [0, 0]);
+	$: capturedSum = Object.keys(props.captured).reduce(
+		(counter, key) => {
+			counter[/[A-Z]/.test(key) ? 0 : 1] += pieceValues[key.toLowerCase()] * props.captured[key];
+			return counter;
+		},
+		[0, 0]
+	);
 	let capturedPiecesSplit;
-	$: capturedPiecesSplit = Object.keys(pieceValues).reduce((counter, key) => {
-		counter[0].push(props.captured[key.toUpperCase()] || 0); 
-		counter[1].push(props.captured[key] || 0); 
-		return counter;
-	}, [[], []]);
+	$: capturedPiecesSplit = Object.keys(pieceValues).reduce(
+		(counter, key) => {
+			counter[0].push(props.captured[key.toUpperCase()] || 0);
+			counter[1].push(props.captured[key] || 0);
+			return counter;
+		},
+		[[], []]
+	);
 
 	for (let y = 0; y < size; y++) {
 		for (let x = 0; x < size; x++) {
@@ -47,7 +57,6 @@
 				x,
 				y,
 				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black',
-				index: x + y * 8
 			});
 		}
 	}
@@ -62,32 +71,40 @@
 				if (hovered > size - 1) {
 					hovered -= size;
 					parentStop = true;
+					updateCursor();
 				}
 				break;
 			case 40: // down
 				if (hovered < Math.pow(size, 2) - size) {
 					hovered += size;
 					parentStop = true;
+					updateCursor();
 				}
 				break;
 			case 37: // left
-				if (hovered % size) {
+				if (hovered % size > 0) {
 					hovered--;
 					parentStop = true;
+					updateCursor();
 				}
 				break;
 			case 39: // right
 				if (hovered % size !== size - 1) {
 					hovered++;
 					parentStop = true;
+					updateCursor();
 				}
 				break;
 			case 13: // enter
-				console.log('enter:', hovered, board[hovered].x, board[hovered].y);
+				setActivePiece(event, getPiece(hovered));
 				break;
 		}
-		updateCursor();
+		if (parentStop) activePieceIndex = -1;
 		return parentStop;
+	}
+
+	function getPiece(pIndex) {
+		return props.pieces.find(({index}) => index === pIndex);
 	}
 
 	function updateCursor() {
@@ -99,10 +116,14 @@
 		});
 	}
 
-	function onPieceClick(event, piece) {
-		hovered = piece.pos;
-		updateCursor();
-		dispatch('click', event);
+	function setActivePiece(event, piece) {
+		if (piece && props.moves[piece.index]) {		
+			hovered = piece.index;
+			if(activePieceIndex !== piece.index) activePieceIndex = piece.index;
+			else activePieceIndex = -1;
+			updateCursor();
+			dispatch('click', event);
+		}
 	}
 </script>
 
@@ -137,19 +158,17 @@
 		.board(class:active)
 			+each('board as field, index')
 				.field(class="{field.color}", class:hovered="{index === hovered}")
+					p.text.caption
+						span {String.fromCharCode(index%8 + 65)}{8 - Math.trunc(index/8)}
 		.pieces
-			+each('[...props.pieces.values()] as piece')
-				.container
-					button(
-						on:click!="{e => onPieceClick(e, piece)}",
-						class:captured="{piece.pos === -1}",
-						style!="{`margin:\
-							${Math.trunc(piece.pos / size) * ($field + $border)}px\
-							0\
-							0\
-							${(piece.pos % size) * ($field + $border)}px\
-						;`}")
-						img(src="{`pieces/${piece.type}.svg`}")
+			+each('props.pieces as piece')
+				Piece(
+					piece="{piece}",
+					moves="{props.moves[piece.index]}",
+					threats="{props.threats[piece.index]}",
+					active="{activePieceIndex === piece.index}",
+					on:click!="{e => setActivePiece(e, piece)}",
+				)
 </template>
 
 <style lang="stylus" global>
@@ -257,7 +276,8 @@
 						color        $ColorBlackTextTri
 						text-align   right
 						
-					> img
+					> img,
+					> svg
 						width        $SizeBlockSmall - 2 * $WidthBorder - 9px
 						margin       0 $WidthBorder 2px 0
 						opacity      $OpacityBlackTri
@@ -327,9 +347,6 @@
 			> .field
 				border-radius $RadiusSmall
 				transition    box-shadow $TimeTrans
-				// testing
-				//line-height   $SizeField
-				//text-align    center
 				
 				&:nth-child(1)
 					border-top-left-radius $Radius
@@ -342,14 +359,19 @@
 				
 				&.white
 					background-color $ColorBGLight
+					>.text
+						color $Grey400
 					
 				&.black
 					background-color $ColorBG
+					>.text
+						color $Grey500
 				
 				&.hovered
-					position    relative
-					color       $ColorAccent
-					font-weight $FW_Bold
+					position relative
+				
+				> .text
+					margin $SpacingSmall
 			
 			&.active > .field.hovered
 				box-shadow $ShadowRaised
@@ -360,24 +382,5 @@
 			height    $SizeBoard
 			margin    $SizeBlockSmall 0 0 $SizeBlockSmall
 			padding   $WidthBorder 0 0 $WidthBorder
-			position  relative
-			
-			> .container
-				width  0
-				height 0
-			
-				> button
-					width            $SizeField
-					height           $SizeField
-					//background-color red
-					border-radius    $Radius
-					transition       margin $TimeTrans, opacity $TimeTrans
-					
-					> img
-						width 100%
-						height 100%
-						padding $Spacing
-			
-					&.captured
-						opacity 0			
+			position  relative			
 </style>

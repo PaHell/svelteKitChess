@@ -56,7 +56,7 @@ export default class {
 	}
 
 	getPieceByPos(pieceMap, pos) {
-		let match = { key: -1, val: { type: undefined, pos }};
+		let match = { key: -1, val: { type: undefined, pos } };
 		pieceMap.forEach((val, key) => {
 			if (val.pos === pos) {
 				match = { key, val };
@@ -96,7 +96,7 @@ export default class {
 			lan,
 			move: `${from} to ${to}`,
 			flag,
-			changes: [...changes.values()].map((val) => `${val.type} to ${val.pos}`).join(', '),
+			changes: [...changes.values()].map((val) => `${val.type} to ${val.pos}`).join(', ')
 		});
 		// RETURN
 		return [changes, flag];

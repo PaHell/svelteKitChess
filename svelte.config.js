@@ -35,14 +35,14 @@ const config = {
 			],
 			resolve: {
 				alias: {
-					$src: path.resolve('./src'),
+					$src: path.resolve('./src')
 				}
 			},
 			optimizeDeps: {
-				//include: ['$lib/grid/input.svelte'],
+				//include: ['chess'],
 			},
 			ssr: {
-				//noExternal: ['$lib/grid/input.svelte'],
+				//noExternal: ['chess'],
 			}
 		},
 		adapter: adapter({
