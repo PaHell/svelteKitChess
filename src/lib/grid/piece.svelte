@@ -8,7 +8,7 @@
 
 <script>
 	export let piece = {};
-	export let moves = {};
+	export let moves = [];
 	export let threats = [];
 	export let active = false;
 	const pieceIcons = {
@@ -19,6 +19,15 @@
 		q: 'chess-queen',
 		k: 'chess-king'
 	};
+
+	let counter;
+	$: counter = moves?.reduce((obj, move) => {
+		obj[move.type]++;
+		return obj;
+	}, {
+		move: 0,
+		capture: 0
+	});
 </script>
 
 <template lang="pug">
@@ -27,7 +36,7 @@
 			on:click,
 			class="{piece.color}",
 			class:active="{active}",
-			class:captured="{piece.pos === -1}",
+			class:captured="{piece.index === -1}",
 			style!="{`margin:\
 				${piece.pos[1] * ($field + $border)}px\
 				0\
@@ -36,20 +45,14 @@
 			;`}")
 			.flags
 				.top
-					+if('threats.length')
+					+if('threats?.length')
 						p.threats.text.caption.bold {threats.length}
 				.bottom
-					+if('moves.captures?.length')
-						p.captures.text.caption.bold {moves.captures.length}
-					+if('moves.moves?.length')
-						p.moves.text.caption.bold {moves.moves.length}
+					+if('moves?.length')
+						p.captures.text.caption.bold {counter.capture}
+						p.moves.text.caption.bold {counter.move}
 			Iconify(icon="{`mdi:${pieceIcons[piece.type.toLowerCase()]}`}")
 			//img(src="{`pieces/${piece.type}.svg`}")
-			+if('active && moves.captures && moves.moves')
-				+each('moves.captures as capture')
-					p.text.caption Capture: { capture.san }
-				+each('moves.moves as move')
-					p.text.caption Move: { move.san }
 </template>
 
 <style lang="stylus" global>
@@ -98,17 +101,21 @@
 				transition  transform $TimeTrans
 				will-change transform
 				
-			&.b > svg > path
-				fill $Orange
+			&.b
+				> .flags > .text
+					&.captures
+						color $Orange
+					&.threats
+						color $ColorAccentIcon
+				> svg > path
+					fill $Orange
 			
-			&.w > svg > path
-				fill $ColorAccentIcon
+			&.w
+				> svg > path
+					fill $ColorAccentIcon
 	
 			&.captured
 				opacity 0
-			
-			&.moves
-				//background radial-gradient($Green, transparent 50%)
 			
 			&.active
 				position relative

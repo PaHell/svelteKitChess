@@ -7,7 +7,7 @@
 	import { blockS, field, border } from '$src/store.js';
 	import Icon from '$lib/icon.svelte';
 	import Piece from '$lib/grid/piece.svelte';
-
+	import Move from '$lib/grid/move.svelte';
 </script>
 
 <script>
@@ -96,10 +96,16 @@
 				}
 				break;
 			case 13: // enter
+				if (activePieceIndex !== -1) {
+					const move = props.moves[activePieceIndex].find(move => move.index === hovered);
+					if (move !== undefined) {
+						performMove(event, move);
+						break;
+					}
+				}
 				setActivePiece(event, getPiece(hovered));
 				break;
 		}
-		if (parentStop) activePieceIndex = -1;
 		return parentStop;
 	}
 
@@ -124,6 +130,20 @@
 			updateCursor();
 			dispatch('click', event);
 		}
+	}
+
+	export function performMove(event, move) {
+		console.table({
+			algebraic: move.san,
+			from: `(${move.from.join('|')})`,
+			to: `(${move.to.join('|')})`,
+			indexTo: move.index,
+			desc: `${move.flag} ${move.type} with ${move.piece}`,
+		});
+		hovered = move.index;
+		activePieceIndex = -1;
+		updateCursor();
+		dispatch('event', move);
 	}
 </script>
 
@@ -169,6 +189,13 @@
 					active="{activePieceIndex === piece.index}",
 					on:click!="{e => setActivePiece(e, piece)}",
 				)
+		.moves
+			+if('activePieceIndex !== -1')
+				+each('props.moves[activePieceIndex] as move')
+					Move(
+						props="{move}",
+						on:click!="{e => performMove(e, move)}"
+					)
 </template>
 
 <style lang="stylus" global>
@@ -205,7 +232,7 @@
 	.container-board
 		overflow              visible !important
 		display               grid
-		grid-template-areas   ".      info0  .   "\
+		grid-template-areas   "moves  info0  .   "\
                               "pieces col0   .   "\
 		                      "row0   board  row1"\
 		                      ".      col1   .   "\
@@ -223,6 +250,7 @@
 			
 			> .player
 				overflow visible
+				
 				
 				> .name
 					position         relative
@@ -257,7 +285,7 @@
 							color $ColorBlackTextTri
 						&:last-child
 							color $ColorBlackTextSec
-			
+							
 			> .captured
 				> .piece
 					overflow        hidden
@@ -381,6 +409,17 @@
 			width     $SizeBoard
 			height    $SizeBoard
 			margin    $SizeBlockSmall 0 0 $SizeBlockSmall
-			padding   $WidthBorder 0 0 $WidthBorder
-			position  relative			
+			padding   $WidthBorder 0 0 $WidthBorder	
+
+		> .moves
+			grid-area moves
+			width     $SizeBoard
+			height    $SizeBoard
+			margin    (2 * $SizeBlockSmall) 0 0 $SizeBlockSmall
+			padding   $WidthBorder 0 0 $WidthBorder	
+
+			> .move
+				width $SizeField
+				height $SizeField
+				background-color $Red
 </style>

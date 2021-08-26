@@ -3,6 +3,9 @@
 		slot
 </template>
 
+<script>
+</script>
+
 <style lang="stylus" global>
 	i.icon
 		display     block

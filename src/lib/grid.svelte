@@ -38,7 +38,6 @@
 	// PROPS
 	export let elements = false;
 	export let layout = false;
-
 	// DATA
 	let data = [];
 	let activeElemID = -1;
@@ -294,7 +293,8 @@
 					bind:this="{element.ref}",
 					active="{activeElemID === i}",
 					on:click!="{(e) => onClick(e, i)}",
-					on:cursor="{onTransformCursor}")
+					on:cursor="{onTransformCursor}",
+					on:event)
 </template>
 
 <style lang="stylus" global>

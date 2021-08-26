@@ -13,7 +13,7 @@
 			moves: [],
 			threats: [],
 			captured: {},
-			turn: 1,
+			turn: 0,
 			players: [
 				{
 					type: 'c',
@@ -50,18 +50,38 @@
 		[ 7, 'board', '.'       ],
 	];
 
-	let fen = '4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17';
+	let fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+	//fen = '4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17'; // complex
+	//fen = 'r3k2r/2p3pp/p1nb1p2/1p4P1/7P/P4B2/1P2N1P1/R3K2R w KQkq - 1 20'; //castling
+	//fen = 'rnbqkbnr/ppp1pppp/3p4/3P4/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2'; // en passant
+	fen = '8/3P3k/8/8/8/8/K5p1/7Q w - - 0 35'; // promotion
+	let engine;
 	// MOUNTED
 	onMount(() => {
-		const engine = new Engine(fen);
+		engine = new Engine(fen);
 		gridElements.board.pieces = engine.getPieces();
 		gridElements.board.moves = engine.getMoves();
-		//gridElements.board.threats =
 		gridElements.board.threats = engine.getThreats();
-		//console.log(engine.move('Rxf6'));
 	});
+
+	function onMove({detail: move}) {
+		console.warn('onMove', move);
+		engine.move(move.lan).forEach(([i, change]) => {
+			console.log('change:', i, change);
+			gridElements.board.pieces[i] = Object.assign(
+				gridElements.board.pieces[i],
+				change
+			);
+		});
+		gridElements.board.turn = gridElements.board.turn === 0 ? 1 : 0;
+		gridElements.board.moves = engine.getMoves();
+		gridElements.board.threats = engine.getThreats();
+	}
 </script>
 
 <template lang="pug">
-	Grid(bind:elements="{gridElements}", layout="{gridLayout}")
+	Grid(
+		bind:elements="{gridElements}",
+		layout="{gridLayout}",
+		on:event="{onMove}")
 </template>
