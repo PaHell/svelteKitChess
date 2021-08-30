@@ -18,9 +18,7 @@ export default class {
 		this.chess.board().forEach((tileRow, y) => {
 			tileRow.forEach((tile, x) => {
 				if (tile) pieces.push({
-					type: tile.color === 'w'
-						? tile.type.toUpperCase()
-						: tile.type,
+					type: tile.type,
 					pos: [x, y],
 					index: x + 8 * y,
 					color: tile.color,
@@ -44,11 +42,17 @@ export default class {
 				to: toXY,
 				index: toXY[0] + 8 * toXY[1],
 				san: val.san,
-				lan: `${val.from}${val.to}`,
-				flag: val.flags,
+				lan: [
+					val.from,
+					val.flags.includes('c') ? 'x' : '-',
+					val.to,
+					val.flags.includes('p') ? '=' : '',
+				].join(''),
+				flags: val.flags,
 				type: getMoveType(val.flags),
 				captured: val.captured,
-				piece: val.piece
+				piece: val.piece,
+				color: val.color
 			});
 			return arr;
 		}, []);
@@ -72,7 +76,7 @@ export default class {
 					to: toXY,
 					index,
 					san: val.san,
-					flag: val.flags,
+					flags: val.flags,
 					captured: val.captured,
 					piece: val.piece
 				});
@@ -83,6 +87,7 @@ export default class {
 
 	move(san) {
 		const move = this.chess.move(san, { sloppy: true });
+		console.log('MOVE', move);
 		const fromXY = tileToXY(move.from);
 		const toXY = tileToXY(move.to);
 		const fromIndex = fromXY[0] + fromXY[1] * 8;
@@ -95,16 +100,6 @@ export default class {
 		console.log(this.chess.ascii());
 		console.log(san, this.chess.fen());
 		switch(move.flags) {
-			// normal capture on target
-			case 'c': {
-				const pieceID = this.pieces.findIndex(p => p.index === toIndex);
-				const y = this.pieces[pieceID].color === 'w' ? -1 : 8;
-				changes.push([pieceID, {
-					index: -1,
-					pos: [7, y],
-				}]);
-			}
-			break;
 			// en passant capture
 			case 'e': {
 				const index = toXY[0] + 8 * fromXY[1];
@@ -140,15 +135,22 @@ export default class {
 				}]);
 			}
 			break;
-			// capture + promotion
-			case 'cp': {
-				//
+			// promotion and/or normal capture
+			default: {
+				if (move.flags.includes('c')) {
+					const pieceID = this.pieces.findIndex(p => p.index === toIndex);
+					const y = this.pieces[pieceID].color === 'w' ? -1 : 8;
+					changes.push([pieceID, {
+						index: -1,
+						pos: [7, y],
+					}]);
+				}
+				if (move.flags.includes('p')) {
+					changes.push([pIndex, {
+						type: move.promotion,
+					}]);
+				}
 			}
-			// non-capture + promotion
-			case 'np': {
-				//
-			}
-			break;
 		}
 		return changes;
 	}
@@ -157,18 +159,20 @@ export default class {
 
 // private functions
 
-function getMoveType(flag) {
-	switch(flag) {
+function getMoveType(flags) {
+	switch(flags) {
 		case 'n':
 		case 'b':
-		case 'p':
 		case 'k':
 		case 'q':
 			return 'move';
-		case 'c':
 		case 'e':
 			return 'capture';
+		default:
+			if (flags.includes('p')) return 'promotion';
+			if (flags.includes('c')) return 'capture';
 	}
+	return 'none';
 }
 
 function tileToXY(tile) {

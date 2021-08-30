@@ -11,13 +11,37 @@
 	export let props = {};
 
 	let arrow = '';
+
 	$: {
-		const arr = [];
-		const diffX = props.to[0] - props.from[0];
-		const diffY = props.to[1] - props.from[1];
-		if (diffY !== 0) arr.push(diffY > 0 ? 'south' : 'north');
-		if (diffX !== 0) arr.push(diffX > 0 ? 'east' : 'west');
-		arrow = arr.join('_');
+		switch (props.flags) {
+			case 'n':
+			{
+				const arr = [];
+				const diffX = props.to[0] - props.from[0];
+				const diffY = props.to[1] - props.from[1];
+				if (diffY !== 0) arr.push(diffY > 0 ? 'south' : 'north');
+				if (diffX !== 0) arr.push(diffX > 0 ? 'east' : 'west');
+				arrow = arr.join('_');
+			}
+			break;
+			case 'b':
+			{
+				const diffY = props.to[1] - props.from[1];
+				arrow = diffY > 0
+					? 'keyboard_double_arrow_down'
+					: 'keyboard_double_arrow_up';
+			}
+			break;
+			default:
+				arrow = {
+					k: 'castle',
+					q: 'castle',
+					c: 'close',
+					e: 'moving',
+					cp: 'close',
+					np: 'star',
+				}[props.flags];
+		}
 	}
 </script>
 
@@ -31,14 +55,8 @@
 				0\
 				${props.to[0] * ($field + $border)}px\
 			;`}")
-			div(
-				class="{props.flag}",
-				class:dark="{(props.to[0] + props.to[1]) % 2}",
-			)
-				+if('props.type === "move"')
-					Icon {arrow}
-				+if('props.type === "capture"')
-					Icon close
+			div(class="{props.color}")
+				Icon {arrow}
 </template>
 
 <style lang="stylus" global>
@@ -66,23 +84,27 @@
 				justify-content center
 				height          100%
 
+				&.w > .icon
+					color $ColorPlayerWhite[0]
+				&.b > .icon
+					color $ColorPlayerBlack[0]
+
 				> .icon
 					width       $SizeMove
 					height      $SizeMove
 					line-height $SizeMove
 					font-size   $FZ_IconLarge
-					color       $Grey400
 					
-				&.dark > .icon
-					color $Grey500
-				
-				&.c > .icon
-					color $ColorAccentIcon
-
-			&:hover > div > .icon
-				color $ColorAccentTranslucent
-			&:active > div > .icon
-				color $ColorAccentIcon
+			&:hover
+				> .w > .icon
+					color $ColorPlayerWhite[1]
+				> .b > .icon
+					color $ColorPlayerBlack[1]
+			&:active
+				> .w > .icon
+					color $ColorPlayerWhite[2]
+				> .b > .icon
+					color $ColorPlayerBlack[2]
 	
 	@keyframes moveFieldIn
 		to

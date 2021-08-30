@@ -8,6 +8,7 @@
 	import Icon from '$lib/icon.svelte';
 	import Piece from '$lib/grid/piece.svelte';
 	import Move from '$lib/grid/move.svelte';
+	import PieceIcon from '$lib/grid/pieceIcon.svelte';
 </script>
 
 <script>
@@ -15,7 +16,6 @@
 	export let props;
 	const defaults = {
 		pieces: [],
-		captured: {},
 		turn: -1,
 		playing: -1,
 		players: []
@@ -33,22 +33,31 @@
 		r: 5,
 		q: 9
 	};
+	let hoveredPromotion = -1;
+	let lastPromotionMove = undefined;
+	const piecesPromotion = ['n', 'b', 'r', 'q'];
 	let capturedSum;
-	$: capturedSum = Object.keys(props.captured).reduce(
-		(counter, key) => {
-			counter[/[A-Z]/.test(key) ? 0 : 1] += pieceValues[key.toLowerCase()] * props.captured[key];
-			return counter;
+	$: capturedSum = capturedPiecesSplit.reduce(
+		(arr, obj) => {
+			let count = 0;
+			Object.keys(obj).forEach(key => {
+				count += obj[key] * pieceValues[key];
+			});
+			arr.push(count);
+			return arr;
 		},
-		[0, 0]
+		[]
 	);
 	let capturedPiecesSplit;
-	$: capturedPiecesSplit = Object.keys(pieceValues).reduce(
-		(counter, key) => {
-			counter[0].push(props.captured[key.toUpperCase()] || 0);
-			counter[1].push(props.captured[key] || 0);
+	$: capturedPiecesSplit = props.pieces.reduce(
+		(counter, piece) => {
+			if (piece.index === -1) {
+				const i = piece.color === 'w' ? 0 : 1;
+				counter[i][piece.type] = ++counter[i][piece.type] || 1;
+			}
 			return counter;
 		},
-		[[], []]
+		[{},{}]
 	);
 
 	for (let y = 0; y < size; y++) {
@@ -68,38 +77,55 @@
 		let parentStop = false;
 		switch (event.keyCode) {
 			case 38: // up
-				if (hovered > size - 1) {
+				if (hoveredPromotion !== -1) {
+					hoveredPromotion = -1;
+					parentStop = true;
+				} else if (hovered > size - 1) {
 					hovered -= size;
 					parentStop = true;
 					updateCursor();
 				}
 				break;
 			case 40: // down
-				if (hovered < Math.pow(size, 2) - size) {
+				if (hoveredPromotion !== -1) {
+					hoveredPromotion = -1;
+					parentStop = true;
+				} else if (hovered < Math.pow(size, 2) - size) {
 					hovered += size;
 					parentStop = true;
 					updateCursor();
 				}
 				break;
 			case 37: // left
-				if (hovered % size > 0) {
+				if (hoveredPromotion !== -1) {
+					hoveredPromotion = hoveredPromotion !== 0
+						? hoveredPromotion - 1
+						: piecesPromotion.length;
+					parentStop = true;
+				} else if (hovered % size > 0) {
 					hovered--;
 					parentStop = true;
 					updateCursor();
 				}
 				break;
 			case 39: // right
-				if (hovered % size !== size - 1) {
+				if (hoveredPromotion !== -1) {
+					hoveredPromotion = hoveredPromotion !== piecesPromotion.length
+						? hoveredPromotion + 1
+						: 0;
+					parentStop = true;
+				} else if (hovered % size !== size - 1) {
 					hovered++;
 					parentStop = true;
 					updateCursor();
 				}
 				break;
 			case 13: // enter
-				if (activePieceIndex !== -1) {
+				if (hoveredPromotion !== -1) performPromotion(hoveredPromotion);
+				else if (activePieceIndex !== -1) {
 					const move = props.moves[activePieceIndex].find(move => move.index === hovered);
 					if (move !== undefined) {
-						performMove(event, move);
+						performMove(move);
 						break;
 					}
 				}
@@ -132,25 +158,46 @@
 		}
 	}
 
-	export function performMove(event, move) {
+	export function performMove(move) {
 		console.table({
 			algebraic: move.san,
 			from: `(${move.from.join('|')})`,
 			to: `(${move.to.join('|')})`,
 			indexTo: move.index,
 			desc: `${move.flag} ${move.type} with ${move.piece}`,
+			type: move.type
 		});
-		hovered = move.index;
-		activePieceIndex = -1;
-		updateCursor();
-		dispatch('event', move);
+		if (move.type === 'promotion' && hoveredPromotion === -1) {
+			lastPromotionMove = move;
+			hoveredPromotion = 0;
+		} else {
+			hovered = move.index;
+			activePieceIndex = -1;
+			updateCursor();
+			dispatch('event', move);
+		}
+	}
+
+	function performPromotion(index) {
+		if (index !== piecesPromotion.length) {
+			const move = {
+				...lastPromotionMove,
+				lan: lastPromotionMove.lan + piecesPromotion[index],
+			};
+			performMove(move);
+			console.warn('do Promo', move.lan);
+		}
+		// close
+		hoveredPromotion = -1;
 	}
 </script>
 
 <template lang="pug">
-	.container-board
+	#board
 		+each('Array(2) as _null, i')
-			.info.flex(style="{`grid-area: info${i}`}")
+			.info.flex(
+				style="{`grid-area: info${i}`}",
+				class="{i === 0 ? 'b' : 'w'}")
 				.tabs.player
 					.flex.name(
 						class:turn="{props.turn === 1 - i}",
@@ -162,10 +209,12 @@
 							p.text.bold { $_('game.board.level') }
 						p.text.bold { props.players[i].level }
 				.tabs.captured
-					+each('Object.keys(pieceValues) as key, index')
-						.piece.flex(class:show="{capturedPiecesSplit[i][index]}")
-							p.text.bold { capturedPiecesSplit[i][index] }
-							img(src="{`pieces/${i === 0 ? key.toUpperCase() : key}.svg`}")
+					+each('Object.keys(pieceValues) as key')
+						.piece.flex(class:show="{capturedPiecesSplit[i][key]}")
+							p.text.bold { capturedPiecesSplit[i][key] }
+							PieceIcon(
+								type="{key}",
+								color="{i === 0 ? 'w' : 'b'}")
 					.sum.flex(class:show="{capturedSum[i]}")
 						p.text.bold { capturedSum[i] }
 						p.text.bold { $_('game.board.points') }
@@ -175,27 +224,50 @@
 			.legend.col(style="{`grid-area: col${i}`}")
 				+each('Array(size) as _, i')
 					p.text.caption.bold { String.fromCharCode(65 + i) }
-		.board(class:active)
-			+each('board as field, index')
-				.field(class="{field.color}", class:hovered="{index === hovered}")
-					p.text.caption
-						span {String.fromCharCode(index%8 + 65)}{8 - Math.trunc(index/8)}
-		.pieces
-			+each('props.pieces as piece')
-				Piece(
-					piece="{piece}",
-					moves="{props.moves[piece.index]}",
-					threats="{props.threats[piece.index]}",
-					active="{activePieceIndex === piece.index}",
-					on:click!="{e => setActivePiece(e, piece)}",
-				)
-		.moves
-			+if('activePieceIndex !== -1')
-				+each('props.moves[activePieceIndex] as move')
-					Move(
-						props="{move}",
-						on:click!="{e => performMove(e, move)}"
-					)
+		.container(class:active)
+			.layer
+				#fields
+					+each('board as field, index')
+						.field(
+							class="{field.color}",
+							class:active="{activePieceIndex === index}")
+							p.text.caption
+								span {String.fromCharCode(index%8 + 65)}{8 - Math.trunc(index/8)}
+			.layer
+				#pieces
+					+each('props.pieces as piece')
+						Piece(
+							piece="{piece}",
+							moves="{props.moves[piece.index]}",
+							threats="{props.threats[piece.index]}",
+							active="{activePieceIndex === piece.index}",
+							on:click!="{e => setActivePiece(e, piece)}",
+						)
+			.layer
+				#moves
+					+if('activePieceIndex !== -1')
+						+each('props.moves[activePieceIndex] as move')
+							Move(
+								props="{move}",
+								on:click!="{() => performMove(move)}"
+							)
+			.layer
+				#promotion(class:show!="{hoveredPromotion > -1}")
+					header.flex
+						Icon star
+						p.text.caption.bold Promote Pawn to:
+					main.flex
+						+each('piecesPromotion as piece, index')
+							button(
+								class:active="{index === hoveredPromotion}",
+								on:click!="{() => performPromotion(index)}"
+							)
+								PieceIcon(type="{piece}", color="w")
+						button(
+							class:active="{piecesPromotion.length === hoveredPromotion}",
+							on:click!="{() => performPromotion(piecesPromotion.length)}",
+						)
+							Icon close
 </template>
 
 <style lang="stylus" global>
@@ -229,14 +301,14 @@
 				border-top-right-radius    $Radius - $WidthBorder
 				border-bottom-right-radius $Radius - $WidthBorder
 	
-	.container-board
+	#board
 		overflow              visible !important
 		display               grid
-		grid-template-areas   "moves  info0  .   "\
-                              "pieces col0   .   "\
-		                      "row0   board  row1"\
-		                      ".      col1   .   "\
-		                      ".      info1  .   "
+		grid-template-areas   ".      info0 .   "\
+                              ".      col0  .   "\
+		                      "row0   ct    row1"\
+		                      ".      col1  .   "\
+		                      ".      info1 .   "
 		grid-template-columns $SizeBlockSmall $SizeBoard $SizeBlockSmall
 		grid-template-rows    $SizeBlockSmall $SizeBlockSmall $SizeBoard $SizeBlockSmall $SizeBlockSmall
 		width                 100%
@@ -248,9 +320,13 @@
 		> .info
 			justify-content space-between
 			
+			&.w > .player > .name > .icon
+				color $ColorPlayerWhite[1]
+			&.b > .player > .name > .icon
+				color $ColorPlayerBlack[1]
+			
 			> .player
 				overflow visible
-				
 				
 				> .name
 					position         relative
@@ -268,9 +344,6 @@
 						
 					&.turn
 						box-shadow $ShadowRaised
-					
-						>.icon
-							color $ColorAccentIcon
 						
 				>.level
 					padding 0 $Spacing
@@ -304,11 +377,10 @@
 						color        $ColorBlackTextTri
 						text-align   right
 						
-					> img,
-					> svg
+					> .piece-icon
 						width        $SizeBlockSmall - 2 * $WidthBorder - 9px
-						margin       0 $WidthBorder 2px 0
-						opacity      $OpacityBlackTri
+						height       $SizeBlockSmall - 2 * $WidthBorder - 9px
+						margin-right $WidthBorder
 				
 				> .sum
 					padding    0 $Spacing
@@ -361,65 +433,117 @@
 					
 					&:first-child
 						margin-top $WidthBorder
-
-		> .board
-			grid-area             board
-			display               grid
-			grid-template-columns repeat(8, $SizeField)
-			grid-template-rows    repeat(8, $SizeField)
-			grid-gap              $WidthBorder
-			background-color      $ColorBorder
-			border                $WidthBorder solid $ColorBorder
-			border-radius         $Radius + $WidthBorder
+						
+		> .container
+			grid-area ct
 			
-			> .field
-				border-radius $RadiusSmall
-				transition    box-shadow $TimeTrans
+			> .layer
+				width  0
+				height 0
 				
-				&:nth-child(1)
-					border-top-left-radius $Radius
-				&:nth-child(8)
-					border-top-right-radius $Radius
-				&:nth-child(57)
-					border-bottom-left-radius $Radius
-				&:nth-child(64)
-					border-bottom-right-radius $Radius
+				> *
+					width  $SizeBoard
+					height $SizeBoard
+
+			#fields
+				display               grid
+				grid-template-columns repeat(8, $SizeField)
+				grid-template-rows    repeat(8, $SizeField)
+				grid-gap              $WidthBorder
+				background-color      $ColorBorder
+				border                $WidthBorder solid $ColorBorder
+				border-radius         $Radius + $WidthBorder
 				
-				&.white
-					background-color $ColorBGLight
-					>.text
-						color $Grey400
+				> .field
+					border-radius $RadiusSmall
+					transition    box-shadow $TimeTrans
 					
-				&.black
-					background-color $ColorBG
-					>.text
-						color $Grey500
+					&:nth-child(1)
+						border-top-left-radius $Radius
+					&:nth-child(8)
+						border-top-right-radius $Radius
+					&:nth-child(57)
+						border-bottom-left-radius $Radius
+					&:nth-child(64)
+						border-bottom-right-radius $Radius
+					
+					&.white
+						background-color $ColorBGLight
+						>.text
+							color $Grey400
+						
+					&.black
+						background-color $ColorBG
+						>.text
+							color $Grey500
+					
+					&.active
+						position relative
+					
+					> .text
+						margin $SpacingSmall
 				
-				&.hovered
-					position relative
-				
-				> .text
-					margin $SpacingSmall
+				&.active > .field.active
+					box-shadow $ShadowRaised
+					
+			#pieces
+				padding $WidthBorder 0 0 $WidthBorder	
+
+			#moves
+				padding $WidthBorder 0 0 $WidthBorder	
+
+				> .move
+					width  $SizeField
+					height $SizeField
 			
-			&.active > .field.hovered
-				box-shadow $ShadowRaised
+			#promotion
+				width            5 * $SizeField + 4 * $WidthBorder
+				height           $SizeField + $SizeBlockSmall + $WidthBorder
+				position         relative
+				background-color $ColorBorder
+				box-shadow       $ShadowRaised
+				border-radius    $Radius
+				opacity          0
+				transform        scale(0)
+				transition       transform $TimeTrans, opacity $TimeTrans
 				
-		> .pieces
-			grid-area pieces
-			width     $SizeBoard
-			height    $SizeBoard
-			margin    $SizeBlockSmall 0 0 $SizeBlockSmall
-			padding   $WidthBorder 0 0 $WidthBorder	
+				&.show
+					opacity   1
+					transform scale(1)
+				
+				> header
+					margin-bottom    $WidthBorder
+					border-radius    $Radius $Radius $RadiusSmall $RadiusSmall
+					background-color $ColorBG
+					
+					> .icon
+						color       $Amber[1]
+						font-size   $FZ_IconSmall
+						line-height $SizeBlockSmall
+					
+					> .text
+						margin-left $SpacingText
+						color       $ColorBlackTextSec
+				
+				> main
+					overflow         hidden
+					border-radius    $RadiusSmall $RadiusSmall $Radius $Radius
 
-		> .moves
-			grid-area moves
-			width     $SizeBoard
-			height    $SizeBoard
-			margin    (2 * $SizeBlockSmall) 0 0 $SizeBlockSmall
-			padding   $WidthBorder 0 0 $WidthBorder	
-
-			> .move
-				width $SizeField
-				height $SizeField
-				background-color $Red
+					> button
+						width            $SizeField
+						height           $SizeField
+						padding          $Spacing
+						background-color $ColorBGLight
+						border-radius    $RadiusSmall
+						
+						&:not(:first-child)
+							margin-left $WidthBorder
+						
+						> .icon
+							font-size   $FZ_IconLarge
+							color       $ColorIconPri
+							line-height ($SizeField - 2 * $Spacing)
+						
+						&.active
+							background-color $Red[1]
 </style>

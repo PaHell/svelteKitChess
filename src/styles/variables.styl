@@ -15,21 +15,28 @@ $Grey850 = #303030
 $Grey900 = #212121
 $Grey950 = #000000
 // Colors: Palette
-$Yellow      = #f9A11d // Crayola Bright Yello
-$OrangeLight = #fbc559
-$Orange      = #FF9100
-$Red         = #ff3b30 // Coral Red
-$Blue        = #1EA7C9
-$BlueLight   = #3CC0DC
-$BlueDark    = #245A62
-$Green       = #97C664
-$GreenLight  = #93f29e
-$Purple      = #7C4DFF
-$Brown       = #a36913 // Golden Brown
+$Red        = (#ff867c #ef5350 #b61827)
+$Pink       = (#ff77a9 #ec407a #b4004e)
+$Purple     = (#df78ef #ab47bc #790e8b)
+$DeepPurple = (#b085f5 #7e57c2 #4d2c91)
+$Indigo     = (#8e99f3 #5c6bc0 #26418f)
+$Blue       = (#80d6ff #42a5f5 #0077c2)
+$LightBlue  = (#73e8ff #29b6f6 #0086c3)
+$Cyan       = (#6ff9ff #26c6da #0095a8)
+$Teal       = (#64d8cb #26a69a #00766c)
+$Green      = (#98ee99 #66bb6a #338a3e)
+$LightGreen = (#cfff95 #9ccc65 #6b9b37)
+$Lime       = (#ffff89 #d3e057 #9fae22)
+$Yellow     = (#ffff8b #ffee58 #c9bc1f)
+$Amber      = (#fffd61 #ffca28 #c79a00)
+$Orange     = (#ffd95b #ffa726 #c77800)
+$DeepOrange = (#ffa270 #ff7043 #c63f17)
+$Brown      = (#be9c91 #8d6e63 #5f4339)
+$BlueGrey   = (#a7c0cd #78909c #4b636e)
 // Colors: Status
-$ColorError   = $Red
-$ColorSuccess = $Blue
-$ColorWarning = $Orange
+$ColorError   = $Red[1]
+$ColorSuccess = $Blue[1]
+$ColorWarning = $Orange[1]
 // Text/Icons: Opacity
 $OpacityBlackPri = .9
 $OpacityBlackSec = .5
@@ -81,12 +88,15 @@ ellipsis()
 
 // IDENTITY
 // Accent
-$ColorAccent            = $BlueLight
-$ColorAccentIcon        = $Blue
-$ColorAccentText        = $BlueDark
+$ColorAccent            = $Blue[1]
+$ColorAccentIcon        = $Blue[2]
+$ColorAccentText        = $Blue[2]
 $ColorTextOnAccent      = $ColorWhiteTextPri
 $ColorIconOnAccent      = $ColorWhiteTextPri
 $ColorAccentTranslucent = rgba($ColorAccent, .5)
+
+$ColorPlayerWhite = $Blue
+$ColorPlayerBlack = $Red
 
 // Background Shading
 $ColorBGLight = $Grey000

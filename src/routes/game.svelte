@@ -54,7 +54,8 @@
 	//fen = '4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17'; // complex
 	//fen = 'r3k2r/2p3pp/p1nb1p2/1p4P1/7P/P4B2/1P2N1P1/R3K2R w KQkq - 1 20'; //castling
 	//fen = 'rnbqkbnr/ppp1pppp/3p4/3P4/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2'; // en passant
-	fen = '8/3P3k/8/8/8/8/K5p1/7Q w - - 0 35'; // promotion
+	fen = '2q5/3P3k/8/8/8/8/K5p1/5Q2 b - - 0 35'; // promotion
+	//fen = 'r2q1rk1/2pbbp2/p1n2n1p/1p1pp1p1/1P1PP1P1/P1N2N1P/2PBBP2/R2Q1RK1 w - - 2 12' // captures
 	let engine;
 	// MOUNTED
 	onMount(() => {
@@ -68,6 +69,7 @@
 		console.warn('onMove', move);
 		engine.move(move.lan).forEach(([i, change]) => {
 			console.log('change:', i, change);
+			// merge changes
 			gridElements.board.pieces[i] = Object.assign(
 				gridElements.board.pieces[i],
 				change
@@ -76,6 +78,7 @@
 		gridElements.board.turn = gridElements.board.turn === 0 ? 1 : 0;
 		gridElements.board.moves = engine.getMoves();
 		gridElements.board.threats = engine.getThreats();
+		console.log(gridElements.board.pieces);
 	}
 </script>
 

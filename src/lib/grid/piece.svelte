@@ -4,6 +4,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import Iconify from '@iconify/svelte';
 	import { blockS, field, border } from '$src/store.js';
+	import PieceIcon from '$lib/grid/pieceIcon.svelte';
 </script>
 
 <script>
@@ -11,14 +12,6 @@
 	export let moves = [];
 	export let threats = [];
 	export let active = false;
-	const pieceIcons = {
-		p: 'chess-pawn',
-		n: 'chess-knight',
-		b: 'chess-bishop',
-		r: 'chess-rook',
-		q: 'chess-queen',
-		k: 'chess-king'
-	};
 
 	let counter;
 	$: counter = moves?.reduce((obj, move) => {
@@ -51,8 +44,10 @@
 					+if('moves?.length')
 						p.captures.text.caption.bold {counter.capture}
 						p.moves.text.caption.bold {counter.move}
-			Iconify(icon="{`mdi:${pieceIcons[piece.type.toLowerCase()]}`}")
-			//img(src="{`pieces/${piece.type}.svg`}")
+			PieceIcon(
+				type="{piece.type}",
+				color="{piece.color}"
+			)
 </template>
 
 <style lang="stylus" global>
@@ -87,32 +82,31 @@
 						&.moves
 							margin-left auto
 							color       $ColorBlackTextTri
-						&.captures
-							color       $ColorAccentIcon
 						&.threats
 							margin-left auto
-							color       $Orange
 			
-			> img,
-			> svg
-				width       100%
-				height      100%
+			> .piece-icon
 				padding     $Spacing
 				transition  transform $TimeTrans
 				will-change transform
 				
 			&.b
-				> .flags > .text
+				> .flags .text
 					&.captures
-						color $Orange
+						color $ColorPlayerBlack[1]
 					&.threats
-						color $ColorAccentIcon
+						color $ColorPlayerWhite[1]
 				> svg > path
-					fill $Orange
+					fill $ColorPlayerBlack[1]
 			
 			&.w
+				> .flags .text
+					&.captures
+						color $ColorPlayerWhite[1]
+					&.threats
+						color $ColorPlayerBlack[1]
 				> svg > path
-					fill $ColorAccentIcon
+					fill $ColorPlayerWhite[1]
 	
 			&.captured
 				opacity 0
