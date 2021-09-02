@@ -1,5 +1,3 @@
-<svelte:options accessors={true} />
-
 <script context="module">
 	import { createEventDispatcher } from 'svelte';
 	import Iconify from '@iconify/svelte';

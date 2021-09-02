@@ -1,10 +1,14 @@
 import { Chess } from 'chess.js';
+import sfEngine from './sfEngine.js';
 
 const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 export default class {
+	moves = [];
 	constructor(fen) {
-		this.load(fen ? fen : DEFAULT_FEN);
+		this.fen = fen ? fen : DEFAULT_FEN;
+		this.load(this.fen);
+		this.sfEngine = undefined;
 	}
 
 	load(fen) {
@@ -44,7 +48,7 @@ export default class {
 				san: val.san,
 				lan: [
 					val.from,
-					val.flags.includes('c') ? 'x' : '-',
+					//val.flags.includes('c') ? 'x' : '-',
 					val.to,
 					val.flags.includes('p') ? '=' : '',
 				].join(''),
@@ -85,9 +89,14 @@ export default class {
 		}, []);
 	}
 
-	move(san) {
-		const move = this.chess.move(san, { sloppy: true });
+	move(lan) {
+		// do move in engine
+		const move = this.chess.move(lan, { sloppy: true });
 		console.log('MOVE', move);
+		// add to move list
+		this.moves.push(lan);
+
+		// PROCESS CHANGES
 		const fromXY = tileToXY(move.from);
 		const toXY = tileToXY(move.to);
 		const fromIndex = fromXY[0] + fromXY[1] * 8;
@@ -98,7 +107,7 @@ export default class {
 			pos: toXY,
 		}]];
 		console.log(this.chess.ascii());
-		console.log(san, this.chess.fen());
+		console.log(lan, this.chess.fen());
 		switch(move.flags) {
 			// en passant capture
 			case 'e': {
@@ -155,6 +164,16 @@ export default class {
 		return changes;
 	}
 
+	getBestMove(depth = 1) {
+		if (!this.sfEngine) {
+			console.warn('INIT sfENGINE');
+			this.sfEngine = new sfEngine();
+			console.log('moves', this.moves);
+			this.sfEngine.load(this.fen, this.moves, depth);
+		}
+		return this.sfEngine.getBestMove(this.moves);
+	}
+
 }
 
 // private functions
@@ -167,10 +186,11 @@ function getMoveType(flags) {
 		case 'q':
 			return 'move';
 		case 'e':
+		case 'c':
 			return 'capture';
 		default:
-			if (flags.includes('p')) return 'promotion';
 			if (flags.includes('c')) return 'capture';
+			if (flags.includes('p')) return 'promotion';
 	}
 	return 'none';
 }

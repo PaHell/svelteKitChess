@@ -1,10 +1,8 @@
-<svelte:options accessors={true} />
-
 <script context="module">
 	import { createEventDispatcher } from 'svelte';
 	import Iconify from '@iconify/svelte';
 	import { blockS, field, border } from '$src/store.js';
-	import PieceIcon from '$lib/grid/pieceIcon.svelte';
+	import PieceIcon from '$lib/grid/board/pieceIcon.svelte';
 </script>
 
 <script>
@@ -114,6 +112,6 @@
 			&.active
 				position relative
 				
-				> svg
+				> .piece-icon
 					transform rotateY(180deg)
 </style>

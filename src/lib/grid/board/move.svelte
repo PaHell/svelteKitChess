@@ -1,5 +1,3 @@
-<svelte:options accessors={true} />
-
 <script context="module">
 	import { createEventDispatcher } from 'svelte';
 	import Iconify from '@iconify/svelte';
@@ -9,38 +7,44 @@
 
 <script>
 	export let props = {};
-
-	let arrow = '';
+	let iconArr = [];
 
 	$: {
-		switch (props.flags) {
+		let flags = Array.from(props.flags);
+		iconArr = flags.reduce((arr, flag) => {
+			arr.push(flagToIcon(flag));
+			return arr;
+		}, []);
+	}
+
+	function flagToIcon(flag) {
+		switch (flag) {
 			case 'n':
+			case 'e':
 			{
 				const arr = [];
 				const diffX = props.to[0] - props.from[0];
 				const diffY = props.to[1] - props.from[1];
 				if (diffY !== 0) arr.push(diffY > 0 ? 'south' : 'north');
 				if (diffX !== 0) arr.push(diffX > 0 ? 'east' : 'west');
-				arrow = arr.join('_');
+				return arr.join('_');
 			}
 			break;
 			case 'b':
 			{
 				const diffY = props.to[1] - props.from[1];
-				arrow = diffY > 0
+				return diffY > 0
 					? 'keyboard_double_arrow_down'
 					: 'keyboard_double_arrow_up';
 			}
 			break;
 			default:
-				arrow = {
+				return {
 					k: 'castle',
 					q: 'castle',
 					c: 'close',
-					e: 'moving',
-					cp: 'close',
-					np: 'star',
-				}[props.flags];
+					p: 'star',
+				}[flag];
 		}
 	}
 </script>
@@ -56,7 +60,8 @@
 				${props.to[0] * ($field + $border)}px\
 			;`}")
 			div(class="{props.color}")
-				Icon {arrow}
+				+each('iconArr as icon')
+					Icon {icon}
 </template>
 
 <style lang="stylus" global>
@@ -80,6 +85,7 @@
 				
 			> div
 				display         flex
+				flex-direction  column
 				align-items     center
 				justify-content center
 				height          100%

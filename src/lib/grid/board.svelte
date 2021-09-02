@@ -6,9 +6,11 @@
 	import { _ } from 'svelte-i18n';
 	import { blockS, field, border } from '$src/store.js';
 	import Icon from '$lib/icon.svelte';
-	import Piece from '$lib/grid/piece.svelte';
-	import Move from '$lib/grid/move.svelte';
-	import PieceIcon from '$lib/grid/pieceIcon.svelte';
+	import PieceIcon from '$lib/grid/board/pieceIcon.svelte';
+	import Fields from '$lib/grid/board/fields.svelte';
+	import Pieces from '$lib/grid/board/pieces.svelte';
+	import Moves from '$lib/grid/board/moves.svelte';
+	import Dialog from '$lib/grid/dialog.svelte';
 </script>
 
 <script>
@@ -23,7 +25,6 @@
 	props = { ...defaults, ...props };
 	const dispatch = createEventDispatcher();
 	const size = 8;
-	const board = [];
 	let hovered = 0;
 	let activePieceIndex = -1;
 	const pieceValues = {
@@ -59,16 +60,6 @@
 		},
 		[{},{}]
 	);
-
-	for (let y = 0; y < size; y++) {
-		for (let x = 0; x < size; x++) {
-			board.push({
-				x,
-				y,
-				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black',
-			});
-		}
-	}
 
 	export function onEnter() {
 		updateCursor();
@@ -148,7 +139,7 @@
 		});
 	}
 
-	function setActivePiece(event, piece) {
+	function setActivePiece(piece) {
 		if (piece && props.moves[piece.index]) {		
 			hovered = piece.index;
 			if(activePieceIndex !== piece.index) activePieceIndex = piece.index;
@@ -167,7 +158,8 @@
 			desc: `${move.flag} ${move.type} with ${move.piece}`,
 			type: move.type
 		});
-		if (move.type === 'promotion' && hoveredPromotion === -1) {
+		// unresolved promotion
+		if (move.lan[move.lan.length-1] === '=') {
 			lastPromotionMove = move;
 			hoveredPromotion = 0;
 		} else {
@@ -226,32 +218,23 @@
 					p.text.caption.bold { String.fromCharCode(65 + i) }
 		.container(class:active)
 			.layer
-				#fields
-					+each('board as field, index')
-						.field(
-							class="{field.color}",
-							class:active="{activePieceIndex === index}")
-							p.text.caption
-								span {String.fromCharCode(index%8 + 65)}{8 - Math.trunc(index/8)}
+				Fields(active="{activePieceIndex}")
 			.layer
-				#pieces
-					+each('props.pieces as piece')
-						Piece(
-							piece="{piece}",
-							moves="{props.moves[piece.index]}",
-							threats="{props.threats[piece.index]}",
-							active="{activePieceIndex === piece.index}",
-							on:click!="{e => setActivePiece(e, piece)}",
-						)
+				Pieces(
+					pieces="{props.pieces}",
+					moves="{props.moves}",
+					threats="{props.threats}",
+					active="{activePieceIndex}",
+					on:click!="{e => setActivePiece(e.detail)}",
+				)
+			+if('activePieceIndex !== -1')
+				.layer
+					Moves(
+						moves="{props.moves[activePieceIndex]}",
+						on:click!="{e => performMove(e.detail)}"
+					)
 			.layer
-				#moves
-					+if('activePieceIndex !== -1')
-						+each('props.moves[activePieceIndex] as move')
-							Move(
-								props="{move}",
-								on:click!="{() => performMove(move)}"
-							)
-			.layer
+				//Dialog
 				#promotion(class:show!="{hoveredPromotion > -1}")
 					header.flex
 						Icon star
@@ -444,57 +427,6 @@
 				> *
 					width  $SizeBoard
 					height $SizeBoard
-
-			#fields
-				display               grid
-				grid-template-columns repeat(8, $SizeField)
-				grid-template-rows    repeat(8, $SizeField)
-				grid-gap              $WidthBorder
-				background-color      $ColorBorder
-				border                $WidthBorder solid $ColorBorder
-				border-radius         $Radius + $WidthBorder
-				
-				> .field
-					border-radius $RadiusSmall
-					transition    box-shadow $TimeTrans
-					
-					&:nth-child(1)
-						border-top-left-radius $Radius
-					&:nth-child(8)
-						border-top-right-radius $Radius
-					&:nth-child(57)
-						border-bottom-left-radius $Radius
-					&:nth-child(64)
-						border-bottom-right-radius $Radius
-					
-					&.white
-						background-color $ColorBGLight
-						>.text
-							color $Grey400
-						
-					&.black
-						background-color $ColorBG
-						>.text
-							color $Grey500
-					
-					&.active
-						position relative
-					
-					> .text
-						margin $SpacingSmall
-				
-				&.active > .field.active
-					box-shadow $ShadowRaised
-					
-			#pieces
-				padding $WidthBorder 0 0 $WidthBorder	
-
-			#moves
-				padding $WidthBorder 0 0 $WidthBorder	
-
-				> .move
-					width  $SizeField
-					height $SizeField
 			
 			#promotion
 				width            5 * $SizeField + 4 * $WidthBorder
