@@ -38,17 +38,14 @@
 	let lastPromotionMove = undefined;
 	const piecesPromotion = ['n', 'b', 'r', 'q'];
 	let capturedSum;
-	$: capturedSum = capturedPiecesSplit.reduce(
-		(arr, obj) => {
-			let count = 0;
-			Object.keys(obj).forEach(key => {
-				count += obj[key] * pieceValues[key];
-			});
-			arr.push(count);
-			return arr;
-		},
-		[]
-	);
+	$: capturedSum = capturedPiecesSplit.reduce((arr, obj) => {
+		let count = 0;
+		Object.keys(obj).forEach((key) => {
+			count += obj[key] * pieceValues[key];
+		});
+		arr.push(count);
+		return arr;
+	}, []);
 	let capturedPiecesSplit;
 	$: capturedPiecesSplit = props.pieces.reduce(
 		(counter, piece) => {
@@ -58,7 +55,7 @@
 			}
 			return counter;
 		},
-		[{},{}]
+		[{}, {}]
 	);
 
 	export function onEnter() {
@@ -89,9 +86,7 @@
 				break;
 			case 37: // left
 				if (hoveredPromotion !== -1) {
-					hoveredPromotion = hoveredPromotion !== 0
-						? hoveredPromotion - 1
-						: piecesPromotion.length;
+					hoveredPromotion = hoveredPromotion !== 0 ? hoveredPromotion - 1 : piecesPromotion.length;
 					parentStop = true;
 				} else if (hovered % size > 0) {
 					hovered--;
@@ -101,9 +96,7 @@
 				break;
 			case 39: // right
 				if (hoveredPromotion !== -1) {
-					hoveredPromotion = hoveredPromotion !== piecesPromotion.length
-						? hoveredPromotion + 1
-						: 0;
+					hoveredPromotion = hoveredPromotion !== piecesPromotion.length ? hoveredPromotion + 1 : 0;
 					parentStop = true;
 				} else if (hovered % size !== size - 1) {
 					hovered++;
@@ -114,20 +107,20 @@
 			case 13: // enter
 				if (hoveredPromotion !== -1) performPromotion(hoveredPromotion);
 				else if (activePieceIndex !== -1) {
-					const move = props.moves[activePieceIndex].find(move => move.index === hovered);
+					const move = props.moves[activePieceIndex].find((move) => move.index === hovered);
 					if (move !== undefined) {
 						performMove(move);
 						break;
 					}
 				}
-				setActivePiece(event, getPiece(hovered));
+				setActivePiece(getPiece(hovered));
 				break;
 		}
 		return parentStop;
 	}
 
 	function getPiece(pIndex) {
-		return props.pieces.find(({index}) => index === pIndex);
+		return props.pieces.find(({ index }) => index === pIndex);
 	}
 
 	function updateCursor() {
@@ -140,9 +133,9 @@
 	}
 
 	function setActivePiece(piece) {
-		if (piece && props.moves[piece.index]) {		
+		if (piece && props.moves[piece.index]) {
 			hovered = piece.index;
-			if(activePieceIndex !== piece.index) activePieceIndex = piece.index;
+			if (activePieceIndex !== piece.index) activePieceIndex = piece.index;
 			else activePieceIndex = -1;
 			updateCursor();
 			dispatch('click', event);
@@ -159,7 +152,7 @@
 			type: move.type
 		});
 		// unresolved promotion
-		if (move.lan[move.lan.length-1] === '=') {
+		if (move.lan[move.lan.length - 1] === '=') {
 			lastPromotionMove = move;
 			hoveredPromotion = 0;
 		} else {
@@ -174,7 +167,7 @@
 		if (index !== piecesPromotion.length) {
 			const move = {
 				...lastPromotionMove,
-				lan: lastPromotionMove.lan + piecesPromotion[index],
+				lan: lastPromotionMove.lan + piecesPromotion[index]
 			};
 			performMove(move);
 			console.warn('do Promo', move.lan);

@@ -18,5 +18,5 @@
 		position         relative
 		background-color $ColorBorder
 		box-shadow       $ShadowRaised
-		border-radius    $Radius	
+		border-radius    $Radius
 </style>

@@ -21,29 +21,27 @@
 		switch (flag) {
 			case 'n':
 			case 'e':
-			{
-				const arr = [];
-				const diffX = props.to[0] - props.from[0];
-				const diffY = props.to[1] - props.from[1];
-				if (diffY !== 0) arr.push(diffY > 0 ? 'south' : 'north');
-				if (diffX !== 0) arr.push(diffX > 0 ? 'east' : 'west');
-				return arr.join('_');
-			}
-			break;
+				{
+					const arr = [];
+					const diffX = props.to[0] - props.from[0];
+					const diffY = props.to[1] - props.from[1];
+					if (diffY !== 0) arr.push(diffY > 0 ? 'south' : 'north');
+					if (diffX !== 0) arr.push(diffX > 0 ? 'east' : 'west');
+					return arr.join('_');
+				}
+				break;
 			case 'b':
-			{
-				const diffY = props.to[1] - props.from[1];
-				return diffY > 0
-					? 'keyboard_double_arrow_down'
-					: 'keyboard_double_arrow_up';
-			}
-			break;
+				{
+					const diffY = props.to[1] - props.from[1];
+					return diffY > 0 ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+				}
+				break;
 			default:
 				return {
 					k: 'castle',
 					q: 'castle',
 					c: 'close',
-					p: 'star',
+					p: 'star'
 				}[flag];
 		}
 	}
@@ -115,5 +113,5 @@
 	@keyframes moveFieldIn
 		to
 			opacity 1
-			transform scale(1)			
+			transform scale(1)
 </style>

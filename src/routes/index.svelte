@@ -1,6 +1,9 @@
 <script>
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { set as setLocale, get as getLocale } from '../i18n';
 	import Grid from '$lib/grid.svelte';
+	import { lastGameConfig } from '$src/store';
 	let gridElements = {
 		heading: {
 			type: 'text',
@@ -65,9 +68,7 @@
 			type: 'button',
 			icon: 'play_arrow',
 			text: 'index.computer.start_game',
-			value: () => {
-				console.log('starting game...');
-			}
+			value: undefined,
 		},
 		pHeadline: {
 			type: 'text',
@@ -95,9 +96,7 @@
 			type: 'button',
 			icon: 'rss_feed',
 			text: 'index.player.connect',
-			value: () => {
-				console.log('connecting...');
-			}
+			value: undefined,
 		},
 		pHost: {
 			type: 'button',
@@ -139,6 +138,16 @@
 		[ 1, 'tHeadline' , 'tHeadline'  , 'tHeadline'  , 'tHeadline', 'tHeadline' ],
 		[ 1, 'tAll'      , 'tContinue'  , 'tContinue'  , '.'        , '.'         ],
 	];
+
+	onMount(() => {
+		gridElements.cStart.value = () => {
+			console.log('starting game...');
+			$lastGameConfig = {
+
+			};
+			goto('/game');
+		}
+	});
 </script>
 
 <template lang="pug">

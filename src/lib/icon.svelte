@@ -1,10 +1,10 @@
+<script>
+</script>
+
 <template lang="pug">
 	i.icon.material-icons-round
 		slot
 </template>
-
-<script>
-</script>
 
 <style lang="stylus" global>
 	i.icon

@@ -26,5 +26,5 @@
 
 <style lang="stylus" global>
 	#pieces
-		padding $WidthBorder 0 0 $WidthBorder	
+		padding $WidthBorder 0 0 $WidthBorder
 </style>

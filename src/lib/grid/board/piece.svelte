@@ -12,13 +12,16 @@
 	export let active = false;
 
 	let counter;
-	$: counter = moves?.reduce((obj, move) => {
-		obj[move.type]++;
-		return obj;
-	}, {
-		move: 0,
-		capture: 0
-	});
+	$: counter = moves?.reduce(
+		(obj, move) => {
+			obj[move.type]++;
+			return obj;
+		},
+		{
+			move: 0,
+			capture: 0
+		}
+	);
 </script>
 
 <template lang="pug">

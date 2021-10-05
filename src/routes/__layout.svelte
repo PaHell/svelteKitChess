@@ -1,10 +1,13 @@
 <script context="module">
 	// lang
 	import { init as initI18n } from '$lib/../i18n';
-	initI18n();
-
-	/* import { waitLocale } from 'svelte-i18n';
-	waitLocale(); */
+	import { waitLocale } from 'svelte-i18n';
+	
+	export async function load() {
+		initI18n();
+		waitLocale();
+		return {};
+	}
 </script>
 
 <script>

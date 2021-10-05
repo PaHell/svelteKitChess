@@ -12,7 +12,7 @@
 			board.push({
 				x,
 				y,
-				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black',
+				color: (y % 2 && x % 2) || (!(y % 2) && !(x % 2)) ? 'white' : 'black'
 			});
 		}
 	}
@@ -68,5 +68,5 @@
 				margin $SpacingSmall
 		
 		&.active > .field.active
-			box-shadow $ShadowRaised		
+			box-shadow $ShadowRaised
 </style>

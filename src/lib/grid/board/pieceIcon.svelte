@@ -5,7 +5,7 @@
 </script>
 
 <script>
-	export let type  = 'q';
+	export let type = 'q';
 	export let color = 'w';
 	const pieceIcons = {
 		p: 'chess-pawn',
@@ -37,5 +37,5 @@
 			fill $ColorPlayerBlack[1]
 			
 		&.w > svg > path
-			fill $ColorPlayerWhite[1]	
+			fill $ColorPlayerWhite[1]
 </style>
