@@ -2,6 +2,7 @@
 	// cursor
 	import Cursor from '$lib/grid/cursor.svelte';
 	// components
+	import list from '$lib/grid/list.svelte';
 	import button from '$lib/grid/button.svelte';
 	import board from '$lib/grid/board.svelte';
 	import checkbox from '$lib/grid/checkbox.svelte';
@@ -11,6 +12,9 @@
 	const elementTypes = {
 		board: {
 			component: board
+		},
+		list: {
+			component: list
 		},
 		button: {
 			component: button
@@ -290,6 +294,7 @@
 				svelte:component(
 					this="{elementTypes[element.type].component}",
 					bind:props="{elements[element.name]}",
+					bind:specs="{data[i].css}",
 					bind:this="{element.ref}",
 					active="{activeElemID === i}",
 					on:click!="{(e) => onClick(e, i)}",
