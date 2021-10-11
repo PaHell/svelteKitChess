@@ -2,34 +2,27 @@
 	// cursor
 	import Cursor from '$lib/grid/cursor.svelte';
 	// components
-	import list from '$lib/grid/list.svelte';
-	import button from '$lib/grid/button.svelte';
-	import board from '$lib/grid/board.svelte';
-	import checkbox from '$lib/grid/checkbox.svelte';
-	import input from '$lib/grid/input.svelte';
-	import select from '$lib/grid/select.svelte';
-	import text from '$lib/grid/text.svelte';
 	const elementTypes = {
 		board: {
-			component: board
+			component: import('./grid/board.svelte')
 		},
 		list: {
-			component: list
+			component: import('./grid/list.svelte')
 		},
 		button: {
-			component: button
+			component: import('./grid/button.svelte')
 		},
 		checkbox: {
-			component: checkbox
+			component: import('./grid/checkbox.svelte')
 		},
 		input: {
-			component: input
+			component: import('./grid/input.svelte')
 		},
 		select: {
-			component: select
+			component: import('./grid/select.svelte')
 		},
 		text: {
-			component: text,
+			component: import('./grid/text.svelte'),
 			skip: true
 		}
 	};
@@ -193,6 +186,14 @@
 
 	// FUNCTIONS
 
+	async function loadComponent(type) {
+		console.log('loading', type);
+		return import('./grid/text.svelte');
+		return elementTypes.hasOwnProperty(type)
+			? elementTypes[type].component
+			: elementTypes.text.component;
+	}
+
 	function getElemID(x, y) {
 		if (y > gridHeight - 1 || x > gridWidth - 1 || y < 0 || x < 0) return -1;
 		return Object.keys(elements).indexOf(gridAreas[y][x]);
@@ -291,15 +292,16 @@
 				transform="{currentCursorTransform}")
 		+each('data as element, i')
 			.cell(style="{`grid-area: ${element.name};`}")
-				svelte:component(
-					this="{elementTypes[element.type].component}",
-					bind:props="{elements[element.name]}",
-					bind:specs="{data[i].css}",
-					bind:this="{element.ref}",
-					active="{activeElemID === i}",
-					on:click!="{(e) => onClick(e, i)}",
-					on:cursor="{onTransformCursor}",
-					on:event)
+				+await('elementTypes[element.type].component then comp')
+					svelte:component(
+						this="{comp.default}",
+						bind:props="{elements[element.name]}",
+						bind:specs="{data[i].css}",
+						bind:this="{element.ref}",
+						active="{activeElemID === i}",
+						on:click!="{(e) => onClick(e, i)}",
+						on:cursor="{onTransformCursor}",
+						on:event)
 </template>
 
 <style lang="stylus" global>

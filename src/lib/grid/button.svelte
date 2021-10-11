@@ -9,6 +9,7 @@
 <script>
 	export let active;
 	export let props;
+	export let specs;
 	const defaults = {
 		icon: false,
 		text: false,
@@ -71,16 +72,19 @@
 		height           100%
 		
 		> .icon
-			width       $SizeBlock
+			width       $FZ_Icon
 			flex-shrink 0
+			
+			&:first-child
+				margin 0 .5 * ($SizeBlock - $FZ_Icon)
+			&:last-child
+				margin-right .5 * ($SizeBlock - $FZ_Icon)
 			
 		> .text
 			font-size      $FZ_Button
 			text-transform uppercase
 			
-			&:first-child
-				margin-left .5 * ($SizeBlock - $FZ_Icon)
-			&:not(:first-child)
+			&:last-child
 				margin-right .5 * ($SizeBlock - $FZ_Icon)
 
 		&.url,

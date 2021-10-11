@@ -2,7 +2,7 @@
 	// lang
 	import { init as initI18n } from '$lib/../i18n';
 	import { waitLocale } from 'svelte-i18n';
-	
+
 	export async function load() {
 		initI18n();
 		waitLocale();
@@ -47,11 +47,11 @@
 	@import './src/styles/app'
 
 	#layout
+		width           100%
 		height          100%
 		display         flex
 		flex-direction  column
 		align-items     center
-		justify-content center
 	
 	#ref
 		width $SizeBlock

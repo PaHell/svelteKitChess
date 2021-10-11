@@ -8,6 +8,7 @@
 <script>
 	export let active;
 	export let props;
+	export let specs;
 	const defaults = {
 		label: false,
 		icon: false,
@@ -47,8 +48,8 @@
 				Icon {props.icon}
 			.right
 				+if('props.label')
-					p.label {$_(props.label)}:
-				p.placeholder {props.value ? '' : $_(props.placeholder)}
+					p.text.label {$_(props.label)}:
+				p.text.placeholder {props.value ? '' : $_(props.placeholder)}
 				.line
 </template>
 
@@ -58,14 +59,17 @@
 	$InputLineHeight = $SizeBlock - 2 * $InputLabelHeight - 4 * $WidthBorder
 
 	.cell-input
-		width    100%
-		height   100%
+		display        flex
+		flex-direction column
+		
+		> *
+			height $SizeBlock
+			
+			&:not(:first-child)
+				margin-top -1 * $SizeBlock
 			
 		> input
-			width         'calc(100% - %s)' % (2 * $WidthBorder)
-			height        'calc(100% - %s)' % (2 * $WidthBorder)
-			margin        $WidthBorder
-			padding-left  .5 * ($SizeBlock - $FZ_Icon) - $WidthBorder
+			padding       $WidthBorder .5 * ($SizeBlock - $FZ_Icon)
 			line-height   $InputLineHeight
 			border-radius $Radius - $WidthBorder
 			
@@ -100,18 +104,18 @@
 		
 		> .overlay
 			display        flex
-			width          100%
-			height         100%
-			margin-top     -1 * $SizeBlock
 			pointer-events none
 			
 			> .icon
-				width  $SizeBlock
-				height $SizeBlock
+				width       $SizeBlock
+				height      $SizeBlock
 			
 			> .right
-				flex         1
-				margin-right .5 * ($SizeBlock - $FZ_Icon)
+				width         'calc(100% - %s)' % $SizeBlock
+				padding-right .5 * ($SizeBlock - $FZ_Icon)
+				
+				> .text
+					ellipsis()
 				
 				> .label
 					height         $InputLabelHeight

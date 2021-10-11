@@ -27,5 +27,5 @@ export const lastGameConfig = writable({
 			name: 'David Noah',
 			level: '420'
 		}
-	],
+	]
 });

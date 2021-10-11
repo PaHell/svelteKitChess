@@ -15,10 +15,7 @@
 			depth: 5,
 			turn: 0,
 			iam: 0,
-			players: [
-				{},
-				{}
-			],
+			players: [{}, {}],
 			pieces: [],
 			moves: [],
 			threats: []
@@ -63,8 +60,8 @@
 			captured: $lastGameConfig.captured,
 			turn: $lastGameConfig.turn,
 			iam: $lastGameConfig.iam,
-			players: $lastGameConfig.players,
-		}
+			players: $lastGameConfig.players
+		};
 		// init board
 		engine = new Engine($lastGameConfig.fen);
 		gridElements.board.pieces = engine.getPieces();
@@ -105,7 +102,6 @@
 			//engine.getBestMove($lastGameConfig.difficulty).then((result) => moveAndUpdate(result));
 		}, 200);
 	}
-
 </script>
 
 <template lang="pug">

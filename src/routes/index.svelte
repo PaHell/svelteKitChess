@@ -68,7 +68,7 @@
 			type: 'button',
 			icon: 'play_arrow',
 			text: 'index.computer.start_game',
-			value: undefined,
+			value: undefined
 		},
 		pHeadline: {
 			type: 'text',
@@ -96,7 +96,7 @@
 			type: 'button',
 			icon: 'rss_feed',
 			text: 'index.player.connect',
-			value: undefined,
+			value: undefined
 		},
 		pHost: {
 			type: 'button',
@@ -142,11 +142,9 @@
 	onMount(() => {
 		gridElements.cStart.value = () => {
 			console.log('starting game...');
-			$lastGameConfig = {
-
-			};
+			$lastGameConfig = {};
 			goto('/game');
-		}
+		};
 	});
 </script>
 

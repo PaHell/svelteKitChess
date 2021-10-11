@@ -19,7 +19,7 @@
 		icon: '',
 		text: '',
 		items: [],
-		callback: () => {},
+		callback: () => {}
 	};
 	props = { ...defaults, ...props };
 	// local
@@ -31,7 +31,7 @@
 	}
 	export function handleKeydown(event) {
 		let parentStop = false;
-		const width  = specs.w / ITEM_WIDTH;
+		const width = specs.w / ITEM_WIDTH;
 		const height = specs.h / ITEM_HEIGHT;
 		switch (event.keyCode) {
 			case 37: // left

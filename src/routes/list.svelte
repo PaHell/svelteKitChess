@@ -47,13 +47,13 @@
 				},
 				{
 					text: 'Lorem'
-				},
+				}
 			],
 			callback: (item, index) => {
 				console.log('LIST ITEM CALLBACK', index, item);
 			},
 			autofocus: true
-		},
+		}
 	};
 	// 12:8 format
 	// prettier-ignore
