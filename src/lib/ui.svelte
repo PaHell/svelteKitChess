@@ -143,6 +143,14 @@
 	function parseTemplateRow(strRow, width) {
 		// parse Array and filter empty
 		const values = strRow.split(' ').filter((n) => n.length);
+		const widthElems = values.reduce((acc, curr) => {
+			const argW = curr.split('-').find(arg => arg.charAt(0) === 'w');
+			const valW = argW?.substr(1);
+			if (valW) {
+				console.log('adding width', valW);
+				acc += parseInt(valW);
+			} else acc += 1;
+		}, 0);
 		// parse args
 		const argsResolved = values.reduce((acc, curr) => {
 			const split = curr.split('-');
@@ -156,6 +164,10 @@
 						case 'w': // width
 							acc.push(...Array(parseInt(val)).fill(name));
 							break;
+						case '>': // flex
+							console.log('> push', {width, widthElems});
+							acc.push(...Array(width - widthElems).fill(name));
+							break;
 						}
 				});
 			} else acc.push(name);
@@ -165,11 +177,6 @@
 		const symbolsResolved = argsResolved.reduce((acc, curr, idx) => {
 			console.log({curr, width});
 			switch(curr) {
-				case '#': {
-					console.log(curr, 'adding .');
-					acc.push('.');
-					break;
-				}
 				case '<>': {
 					const flex = width - argsResolved.length + 1;
 					console.log(' =>', curr, 'adding', flex, '.');
@@ -188,9 +195,10 @@
 			return acc;
 		}, []);
 		// fill rows to width
-		console.log('row length', symbolsResolved.length);
-		console.log('fill to', width - symbolsResolved.length);
-		symbolsResolved.push(...(Array(width - symbolsResolved.length).fill('.')));
+		const fillWidth = width - symbolsResolved.length;
+		if (fillWidth > 0) {
+			symbolsResolved.push(...(Array(width - symbolsResolved.length).fill('.')));
+		}
 		return symbolsResolved;
 	}
 
