@@ -6,6 +6,7 @@
 			type: 'text',
 			icon: 'memory',
 			text: 'game.board_settings.headline',
+			level: 'headline'
 		},
 		button: {
 			type: 'button',
@@ -26,7 +27,7 @@
 			label: 'game.board_settings.fen',
 			name: 'code',
 			placeholder: 'game.board_settings.fen_placeholder',
-			icon: 'vpn_key'
+			icon: 'vpn_key',
 		}
 	};
 	// prettier-ignore
@@ -39,23 +40,23 @@
 			'     .    list-> ',
 		],
 		s: [
-			' input-> ',
-			' list-w2 button-> ',
-			' list-w2 button2->',
-			' list-w2 '
+			'input-> ',
+			'list . button-w1',
+			'list button2',
+			'list '
 		],
 		m: [
-			'input-w4  button->',
-			' list-w4  button2->',
-			' list-w4 '
+			'input <> button-w1',
+			'list button2',
+			'list '
 		],
 		l: [
-			'  input-w5   button->',
-			'   list-w5 . button2->'
+			'input . button-w4',
+			'list button2'
 		],
 		xl: [
-			'  input-w5 button-w5 button2-w5',
-			'   list-> '
+			'input button button2',
+			'list->'
 		]
 	};
 </script>
