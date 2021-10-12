@@ -141,95 +141,62 @@
 		}, 1000);
 	}
 
+	function parseTemplateValue(strVal, defaultWidth) {
+		const args = strVal.split('-');
+		const elem = args[0];
+		const obj = {
+			name: elem,
+			width: defaultWidth,
+			flex: false
+		};
+		if (args.length > 1) {
+			for (let i = 1; i < args.length; i += 1) {
+				const val = args[i].substr(1, args.length - 1);
+				const arg = args[i].charAt(0);
+				switch (arg) {
+					case 'w':
+						obj.width = parseInt(val);
+						break;
+					case '>':
+						obj.flex = true;
+						obj.width = 1;
+						break;
+				}
+			}
+		} else {
+			switch (elem) {
+				case '<>':
+					obj.name = '.';
+					obj.width = 0;
+					obj.flex = true;
+					break;
+				case '.':
+					obj.width = 1;
+					break;
+			}
+		}
+		return obj;
+	}
+
 	function parseTemplateRow(strRow, [name, width, defaultWidth]) {
-		console.log('--- PARSE TEMPLATE ROW ---');
 		// parse Array and filter empty
 		const values = strRow.split(' ').filter((n) => n.length);
-		// calc pure elems with without flex, only width and spaces (.)
 		const widthElems = values.reduce((acc, curr) => {
-			switch (curr) {
-				case '<>':
-					break;
-				case '.':
-					acc += 1;
-					break;
-				default:
-					const split = curr.split('-');
-					const argWidth = split.find(arg => arg.charAt(0) === 'w')?.substr(1);
-					const argFlex = split.find(arg => arg.charAt(0) === '>');
-					if (argWidth) {
-						acc += parseInt(argWidth);				
-					} else if (argFlex) {
-						acc += 1;
-					} else acc += defaultWidth;
-			}
-			console.log('calc width:', {acc, curr});
+			// todo: optimize call
+			acc += parseTemplateValue(curr, defaultWidth).width;
 			return acc;
 		}, 0);
-		console.log('parse row', {str: strRow, widthElems, layout: name, defaultWidth});
-		if (width < widthElems) console.log('  -> longer than layout', name);
-		// parse args
-		const argsResolved = values.reduce((acc, curr) => {
-			switch (curr) {
-				case '<>':
-				case '.':
-					acc.push(curr);
-					break;
-				default:
-					const split = curr.split('-');
-					const name = split[0];
-					let widthResolved = false;
-					if (split.length > 1) {
-						const args = split.splice(1);
-						args.forEach((arg) => {
-							const key = arg.charAt(0);
-							const val = arg.substr(1, arg.length);
-							switch (key) {
-								case 'w': // width
-									console.log(`  -> item-w "${name}"`, {width: parseInt(val)});
-									acc.push(...Array(parseInt(val)).fill(name));
-									widthResolved = true;
-									break;
-								case '>': // flex
-									console.log(`  -> item-> "${name}"`, {width: width - widthElems + 1});
-									if (width - widthElems + 1 > 0) {
-										acc.push(...Array(width - widthElems + 1).fill(name));
-										widthResolved = true;
-									} else console.log('  -> can\'t flex')
-									break;
-							}
-						});
-					}
-					if (!widthResolved) acc.push(...Array(defaultWidth).fill(name));
-			}
-			return acc;
-		}, []);
-		// parse symbols
-		console.log('PARSE SYMBOLS');
-		console.log(argsResolved);
-		const symbolsResolved = argsResolved.reduce((acc, curr, idx) => {
-			console.log(' > symbol', idx, curr, '->', acc);
-			switch(curr) {
-				case '<>': {
-					const flex = width - widthElems;
-					console.log('  ->', curr, 'adding', flex, '.');
-					if (flex > 0) {
-						console.log(' -> space-between', curr);
-						acc.push(...(Array(flex).fill('.')));
-					}
-					break;
-				}
-				default:
-					acc.push(curr);
-			}
+		const arrElems = values.reduce((acc, curr) => {
+			const parsed = parseTemplateValue(curr, defaultWidth);
+			let toFill = 0;
+			if (parsed.flex) toFill = width - widthElems;
+			acc.push(...Array(parsed.width + toFill).fill(parsed.name));
 			return acc;
 		}, []);
 		// fill rows to width
-		const fillWidth = width - symbolsResolved.length;
-		if (fillWidth > 0) {
-			symbolsResolved.push(...(Array(width - symbolsResolved.length).fill('.')));
-		}
-		return symbolsResolved;
+		const missingWidth = width - arrElems.length;
+		if (missingWidth > 0) arrElems.push(...(Array(missingWidth).fill('.')));
+		return arrElems;
 	}
 
 	async function recalcTemplate() {
