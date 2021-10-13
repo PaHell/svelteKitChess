@@ -2,61 +2,89 @@
 	import UI from '$lib/ui.svelte';
 
 	let elements = {
-		list: {
+		tChats: {
 			type: 'text',
-			icon: 'memory',
-			text: 'game.board_settings.headline',
+			icon: 'chats',
+			text: 'My Chats',
 			level: 'headline'
 		},
-		button: {
+		tChat: {
+			type: 'text',
+			text: 'Felix Hartmann',
+			icon: 'face',
+			level: 'headline'
+		},
+		bMore: {
 			type: 'button',
-			text: 'code',
-			icon: 'vpn_key',
+			text: 'More',
+			icon: 'more_vert',
 			value: '/'
 		},
-		button2: {
-			type: 'button',
-			text: 'code',
-			icon: 'vpn_key',
-			value: '/',
-			autofocus: 'true',
+		lChats: {
+			type: 'text',
+			icon: 'chats',
+			text: 'Open Chats',
 		},
-		input: {
+		lMsgs: {
+			type: 'text',
+			icon: 'chats',
+			text: 'Messages',
+		},
+		iMsg: {
 			type: 'input',
 			value: '',
-			label: 'game.board_settings.fen',
-			name: 'code',
-			placeholder: 'game.board_settings.fen_placeholder',
-			icon: 'vpn_key',
-		}
+			label: 'Message Content',
+			name: 'message',
+			placeholder: 'Hello there.',
+			icon: 'message',
+			autofocus: true,
+		},
+		bAttach: {
+			type: 'button',
+			text: 'Attach',
+			icon: 'attach_file',
+			value: '/'
+		},
+		bSend: {
+			type: 'button',
+			text: 'Send',
+			icon: 'send',
+			value: '/'
+		},
 	};
 	// prettier-ignore
 	const layouts = {
 		xs: [
-			' input->  button ',
-			' button2  list-> ',
-			'     .    list-> ',
-			'     .    list-> ',
-			'     .    list-> ',
+			'tChats->',
+			'lChats->',
+			'tChat-> bMore',
+			'lMsgs->',
+			'iMsg->',
+			'bAttach bSend->'
 		],
 		s: [
-			'input-> ',
-			'list . button-w1',
-			'list button2',
-			'list '
+			'tChats->',
+			'lChats->',
+			'tChat-> bMore',
+			'lMsgs->',
+			'iMsg-> bAttach bSend'
 		],
 		m: [
-			'input <> button-w1',
-			'list button2',
-			'list '
+			'tChats->',
+			'lChats->',
+			'tChat-> bMore-w1',
+			'lMsgs->',
+			'iMsg-> bAttach-w1 bSend-w1'
 		],
 		l: [
-			'input . button-w4',
-			'list button2'
+			'tChats-w3 tChat-> bMore-w2',
+			'lChats-w3 lMsgs->',
+			' .-w3 iMsg-> bAttach-w1 bSend-w1'
 		],
 		xl: [
-			'input button button2',
-			'list->'
+			'tChats tChat-> bMore-w2',
+			'lChats lMsgs->',
+			' .-w5 iMsg-> bAttach-w1 bSend-w2'
 		]
 	};
 </script>

@@ -32,7 +32,7 @@
 	const breakpoints = [
 		// size, cols, defaultColumnWidth
 		['xs',  3, 1],
-		[ 's',  4, 2],
+		[ 's',  4, 1],
 		[ 'm',  6, 3],
 		[ 'l', 10, 5],
 		['xl', 15, 5],
