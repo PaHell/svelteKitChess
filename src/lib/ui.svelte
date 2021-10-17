@@ -49,74 +49,90 @@
 	// DATA
 	let refs = {};
 	let nodes = {};
-	let layoutName = '';
+	let activeBP = 0;
 	let gridAreas = [];
 	let gridCols = [];
 	let gridRows = [];
 	let gridStyle = '';
 	$: gridStyle = `
-		grid-template-areas: "${
-			gridAreas.reduce((acc, curr) => {
+		grid-template-areas: "${gridAreas
+			.reduce((acc, curr) => {
 				acc.push(curr.join(' '));
 				return acc;
-			}, []).join('" "')
-		}";
-		grid-template-columns: ${
-			gridCols.reduce((acc, curr) => {
-				acc.push(
-					curr.length
-					? curr
-					: `${curr * ($blockW + $spaceL) - $spaceL}px`
-				);
+			}, [])
+			.join('" "')}";
+		grid-template-columns: ${gridCols
+			.reduce((acc, curr) => {
+				acc.push(curr.length ? curr : `${curr * ($blockW + $spaceL) - $spaceL}px`);
 				return acc;
-			}, []).join(' ')
-		};
-		grid-template-rows: ${
-			gridRows.reduce((acc, curr) => {
-				acc.push(
-					curr.length
-					? curr
-					: `${curr * ($blockH + $spaceL) - $spaceL}px`
-				);
+			}, [])
+			.join(' ')};
+		grid-template-rows: ${gridRows
+			.reduce((acc, curr) => {
+				acc.push(curr.length ? curr : `${curr * ($blockH + $spaceL) - $spaceL}px`);
 				return acc;
-			}, []).join(' ')
-		};
+			}, [])
+			.join(' ')};
 	`;
+	let elemSpecs = {};
+	let _mountResolve;
+	let mountPromise = new Promise((resolve) => {
+		_mountResolve = resolve;
+	});
 
+	// name of active elem
 	let activeElem = '';
+	// cursor
 	let cursorStyle = { w: 0, h: 0, x: 0, y: 0 };
 	let cursorTrans = { w: 0, h: 0, x: 0, y: 0 };
 
 	onMount(() => {
+		// find focused element
+		activeElem = Object.keys(elements).find((name) => elements[name].autofocus);
+		console.log('autofocus:', { activeElem }, '=>', { elem: elements[activeElem] });
 		setTimeout(() => {
+			// enable after mount functions
+			_mountResolve();
 			// init layout
 			handleResize();
-			// find focused element
-			for (const [key, val] of Object.entries(elements)) {
-				if (val.autofocus) {
-					activeElem = key;
-					break;
-				}
-			}
-			console.log('autofocus:', {activeElem});
-		}, 0);
+		}, 500);
 	});
 
 	// FUNCTIONS
 
-	function handleKeydown({keyCode}) {
-		console.log({keyCode});
+	function handleKeydown({ keyCode }) {
+		console.log('handle keydown:', { keyCode });
+		const [fromX, toX] = elemSpecs[activeElem].grid.x;
+		const [fromY, toY] = elemSpecs[activeElem].grid.y;
 		switch (keyCode) {
-			case 37: { // left
+			case 37: {
+				// left
+				console.log('	=> right', { fromX, fromY, fromY });
+				if (isElem(x - 1, fromY)) {
+					const left = gridAreas[fromY][fromX - 1];
+					console.log('	=> ', { left });
+					activeElem = left;
+					updateCursor();
+				}
 				break;
 			}
-			case 39: { // right
+			case 39: {
+				// right
+				console.log('	=> right', { toX, fromY, fromY });
+				if (isElem(fromX + 1, fromY)) {
+					const right = gridAreas[fromY][toX + 1];
+					console.log('	=> ', { right });
+					activeElem = right;
+					updateCursor();
+				}
 				break;
 			}
-			case 38: { // up
+			case 38: {
+				// up
 				break;
 			}
-			case 40: { // down
+			case 40: {
+				// down
 				break;
 			}
 		}
@@ -125,20 +141,72 @@
 	function handleResize() {
 		console.log('handleResize');
 		recalcTemplate();
+		recalcSpecs();
 		updateCursor();
 	}
 
-	async function updateCursor() {
-		setTimeout(() => {
-			console.log(refs[activeElem]);
-			const n = nodes[activeElem];
-			cursorStyle = {
-				w: n.clientWidth,
-				h: n.clientHeight,
-				x: n.offsetLeft,
-				y: n.offsetTop,
+	function updateCursor() {
+		mountPromise.then(() => {
+			console.log('updating cursor');
+			console.log('	=> func:', { ref: Object.keys(refs[activeElem]).join(' ') });
+			cursorStyle = elemSpecs[activeElem].px;
+			console.log('	=> cursor:', { ...cursorStyle });
+		});
+	}
+
+	function isElem(x, y) {
+		if (x < 0 || y < 0) return false;
+		switch (gridAreas[y][x]) {
+			case '.':
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	function recalcSpecs() {
+		mountPromise.then(() => {
+			elemSpecs = {};
+			const w = activeBP[1];
+			const h = layouts[activeBP[0]].length;
+			console.log('set elem specs', { w, h });
+			for (let y = 0; y < h; y++) {
+				for (let x = 0; x < w; x++) {
+					const name = gridAreas[y][x];
+					if (!elements[name]) {
+						console.log('	=> no elem found for', name, x, y);
+					} else if (!elemSpecs[name]) {
+						const n = nodes[name];
+						// create entry
+						elemSpecs[name] = {
+							grid: {
+								x: [x, x],
+								y: [y, y],
+								w: 1,
+								h: 1
+							},
+							px: {
+								w: n.clientWidth,
+								h: n.clientHeight,
+								x: n.offsetLeft,
+								y: n.offsetTop
+							}
+						};
+						console.log('	=> new entry:', name);
+					} else {
+						// update entry
+						const [fromX, toX] = elemSpecs[name].grid.x;
+						const [fromY, toY] = elemSpecs[name].grid.y;
+						elemSpecs[name].grid = {
+							x: [x < fromX ? x : fromX, x > toX ? x : toX],
+							y: [y < fromX ? y : fromX, y > toX ? y : toX],
+							w: toX - fromX + 1,
+							h: toY - fromY + 1
+						};
+					}
+				}
 			}
-		}, 1000);
+		});
 	}
 
 	function parseTemplateValue(strVal, defaultWidth) {
@@ -195,47 +263,50 @@
 		}, []);
 		// fill rows to width
 		const missingWidth = width - arrElems.length;
-		if (missingWidth > 0) arrElems.push(...(Array(missingWidth).fill('.')));
+		if (missingWidth > 0) arrElems.push(...Array(missingWidth).fill('.'));
 		return arrElems;
 	}
 
-	async function recalcTemplate() {
-		let map = breakpoints;
-		let bp = map[0];
-		let w = Math.trunc((window.innerWidth - $spaceL) / ($blockW + $spaceL));
-		for (const [key, value, defaultW] of map) {
+	function getBreakpoint() {
+		console.log('get breakpoint');
+		const w = Math.trunc((window.innerWidth - $spaceL) / ($blockW + $spaceL));
+		console.log('	=> windowWidth:', w);
+		let bp = breakpoints[0];
+		breakpoints.forEach(([key, value, defaultW]) => {
 			if (bp[1] < value && value <= w) {
 				bp = [key, value, defaultW];
 			}
-		}
-		w = bp[1];
-		layoutName = bp[0];
-		console.log('LAYOUT:', layoutName);
-		const layout = layouts[bp[0]];
-		gridAreas = [];
-		for (let y = 0; y < layout.length; y++) {
-			const parsed = parseTemplateRow(layout[y], bp);
-			gridAreas.push(parsed);
-		}
-		w <= breakpoints[0][1]
-			? gridCols = [1, 'minmax(0, 1fr)', 1]
-			: gridCols = Array(w).fill(1);
-		gridRows = Array(layout.length).fill(1);
+		});
+		console.log('	=> chosen:', bp);
+		return bp;
 	}
 
+	function recalcTemplate() {
+		console.log('recalc template');
+		activeBP = getBreakpoint();
+		const [layoutName, width, defaultW] = activeBP;
+		const layout = layouts[layoutName];
+		gridAreas = [];
+		for (let y = 0; y < layout.length; y++) {
+			const parsed = parseTemplateRow(layout[y], activeBP);
+			gridAreas.push(parsed);
+		}
+		if (width === breakpoints[0][1]) gridCols = [1, 'minmax(0, 1fr)', 1];
+		else gridCols = Array(width).fill(1);
+		gridRows = Array(layout.length).fill(1);
+	}
 </script>
 
 <!-- prettier-ignore -->
 <svelte:window
-	on:keydown="{throttle(handleKeydown, 250)}"
-	on:resize="{debounce(handleResize, 250)}"
+	on:keydown="{throttle(handleKeydown, 2)}"
+	on:resize="{debounce(handleResize, 256)}"
 />
 
 <template lang="pug">
-	.ui(style="{gridStyle}", class="{`layout-${layoutName}`}")
-		+if('activeElem.length')
-			Cursor(style="{cursorStyle}")
-				//, transform="{currentCursorTransform}")
+	.ui(style="{gridStyle}", class="{`layout-${activeBP[0]}`}")
+		Cursor(style="{cursorStyle}")
+			//, transform="{currentCursorTransform}")
 		+each('Object.entries(elements) as [name, elem], i')
 			.cell(
 				bind:this="{nodes[name]}",
@@ -245,7 +316,8 @@
 						this="{comp.default}",
 						bind:this="{refs[name]}",
 						bind:props="{elem}",
-						active="{ activeElem === i }",
+						bind:specs="{elemSpecs[name]}",
+						active="{ activeElem === name }",
 					)
 </template>
 

@@ -8,7 +8,7 @@
 <script>
 	export let active;
 	export let props;
-	export let specs;
+	export let specs = {};
 	const defaults = {
 		label: false,
 		icon: false,
